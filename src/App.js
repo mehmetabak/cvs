@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Calendar, Download, Upload, Clock, BookOpen, User, Moon, Sun, FileText, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Calendar, Download, Upload, Clock, BookOpen, User, FileText, CheckCircle, AlertTriangle } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
 // --- ANA BİLEŞEN ---
@@ -14,41 +14,11 @@ const ScheduleToCalendar = () => {
   const [parsedEvents, setParsedEvents] = useState([]); // Seçili kuruldan parse edilen ders etkinlikleri
   const [loading, setLoading] = useState(false); // Dosya işlenirken gösterilecek yükleme durumu
   const [error, setError] = useState(''); // Olası hataları kullanıcıya göstermek için
-  const [isDarkMode, setIsDarkMode] = useState(false); // Arayüz temasını (aydınlık/karanlık) yönetir
-
-  // --- TEMA YÖNETİMİ ---
-  // Bu useEffect, bileşen ilk yüklendiğinde çalışır ve kullanıcının tema tercihini belirler.
-  useEffect(() => {
-    // 1. localStorage'da kayıtlı bir tema var mı diye kontrol et.
-    const storedTheme = localStorage.getItem('theme');
-    // 2. Eğer kayıt yoksa, işletim sisteminin tercihini kontrol et.
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (storedTheme === 'dark' || (!storedTheme && prefersDark)) {
-      setIsDarkMode(true);
-    }
-  }, []);
-
-  // Bu useEffect, isDarkMode durumu her değiştiğinde çalışır.
-  useEffect(() => {
-    // Temayı <html> elementine bir class olarak ekler/kaldırır.
-    // Tailwind'in `darkMode: 'class'` ayarı bu class'ı kullanarak temayı değiştirir.
-    const root = window.document.documentElement;
-    if (isDarkMode) {
-      root.classList.add('dark');
-      localStorage.setItem('theme', 'dark'); // Tercihi gelecekteki ziyaretler için kaydet.
-    } else {
-      root.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDarkMode]);
   
   // --- TEMEL FONKSİYONLAR ---
 
   // EXCEL'İ AYRIŞTIRMA (PARSE) MANTIĞI
   const parseScheduleData = (data) => {
-    // ... Bu fonksiyonun iç mantığı önceki versiyonla aynı kalmıştır,
-    // sadece daha fazla yorum satırı eklenmiştir.
     const events = [];
     let headerRowIndex = -1;
 
@@ -88,13 +58,12 @@ const ScheduleToCalendar = () => {
         const row = data[i];
         if (!row || row.length === 0) continue;
 
-        // Birleştirilmiş "GÜN" hücrelerini yönetmek için: Eğer hücrede tarih varsa güncelle, yoksa bir öncekini kullan
         const cellDateValue = row[dateColumnIndex];
         if (cellDateValue) {
-            if (typeof cellDateValue === 'number') { // Excel'in tarihleri sayı olarak saklaması durumu
+            if (typeof cellDateValue === 'number') {
                 const excelEpoch = new Date(1899, 11, 30);
                 currentDate = new Date(excelEpoch.getTime() + cellDateValue * 86400000);
-            } else { // Metin olarak "gg/aa/yyyy" veya "gg.aa.yyyy" formatı
+            } else {
                 const dateParts = cellDateValue.toString().split(/[\/.]/);
                 if (dateParts.length === 3) {
                     currentDate = new Date(dateParts[2], dateParts[1] - 1, dateParts[0]);
@@ -102,7 +71,7 @@ const ScheduleToCalendar = () => {
             }
         }
 
-        if (!currentDate || isNaN(currentDate.getTime())) continue; // Geçerli bir tarih yoksa bu satırı atla
+        if (!currentDate || isNaN(currentDate.getTime())) continue;
 
         const timeSlot = row[timeColumnIndex]?.toString() || '';
         const topic = row[topicColumnIndex]?.toString().trim() || '';
@@ -116,7 +85,6 @@ const ScheduleToCalendar = () => {
         const dayOfWeek = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'][currentDate.getDay()];
         const instructor = (instructorColumnIndex !== -1 && row[instructorColumnIndex]) ? row[instructorColumnIndex].toString().trim() : '';
         
-        // Tüm bilgileri bir obje olarak events dizisine ekle
         events.push({
             title: topic,
             instructor: instructor,
@@ -129,7 +97,7 @@ const ScheduleToCalendar = () => {
         });
     }
     setParsedEvents(events);
-    if(events.length === 0) {
+    if(events.length === 0 && data.length > headerRowIndex + 1) {
       setError(`"${activeKurul}" için ders bulunamadı veya bu sayfadaki format uyumsuz.`);
     }
   };
@@ -139,7 +107,6 @@ const ScheduleToCalendar = () => {
     const selectedFile = event.target.files[0];
     if (selectedFile && selectedFile.name.endsWith('.xlsx')) {
       setFile(selectedFile);
-      // Yeni dosya seçildiğinde tüm eski verileri temizle
       setWorkbookData(null);
       setKurullar([]);
       setActiveKurul('');
@@ -154,7 +121,7 @@ const ScheduleToCalendar = () => {
   const processFile = useCallback(async () => {
     if (!file) return;
     setLoading(true);
-    setError(''); // Yeni işlem öncesi eski hataları temizle
+    setError('');
     try {
       const fileData = await file.arrayBuffer();
       const workbook = XLSX.read(fileData, { type: 'array' });
@@ -168,19 +135,19 @@ const ScheduleToCalendar = () => {
       
       setWorkbookData(workbook);
       setKurullar(sheetNames);
-      setActiveKurul(sheetNames[0]); // Otomatik olarak ilk kurulu seç
+      setActiveKurul(sheetNames[0]);
     } catch (err) {
       console.error('Dosya okuma hatası:', err);
       setError('Dosya işlenirken bir hata oluştu. Dosyanın bozuk olmadığından emin olun.');
     } finally {
       setLoading(false);
     }
-  }, [file]);
+  }, [file, activeKurul]);
   
   // AKTİF KURUL DEĞİŞTİĞİNDE TETİKLENİR
   useEffect(() => {
     if (activeKurul && workbookData) {
-      setError(''); // Kurul değiştirildiğinde eski hataları temizle
+      setError('');
       const worksheet = workbookData.Sheets[activeKurul];
       const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
       parseScheduleData(jsonData);
@@ -189,7 +156,6 @@ const ScheduleToCalendar = () => {
 
   // TAKVİM (.ICS) DOSYASI OLUŞTURMA
   const generateICSFile = () => {
-    // ... Bu fonksiyonun iç mantığı önceki versiyonla aynı kalmıştır ...
     if (parsedEvents.length === 0) return;
     const now = new Date();
     const formatDateTime = (date) => date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
@@ -224,50 +190,41 @@ const ScheduleToCalendar = () => {
     document.body.removeChild(link);
   };
 
-
   // --- RENDER (ARAYÜZÜN OLUŞTURULMASI) ---
+  // Arayüz artık kalıcı olarak karanlık moddadır.
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 p-4 sm:p-6 lg:p-8 font-sans transition-colors duration-300">
-      <div className="max-w-7xl mx-auto relative">
-
-        {/* --- Tema Değiştirme Butonu --- */}
-        <button
-          onClick={() => setIsDarkMode(!isDarkMode)}
-          className="absolute top-0 right-0 z-10 p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-slate-900 transition-colors"
-          aria-label="Toggle dark mode"
-        >
-          {isDarkMode ? <Sun size={22} /> : <Moon size={22} />}
-        </button>
+    <div className="dark min-h-screen bg-slate-900 text-slate-200 p-4 md:p-8 font-sans">
+      <div className="max-w-6xl mx-auto">
 
         {/* --- Sayfa Başlığı --- */}
         <header className="text-center mb-10">
-          <div className="inline-flex items-center gap-3 bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 px-6 py-3 rounded-full shadow-md mb-4">
-            <Calendar className="text-indigo-500" size={32} />
-            <h1 className="text-2xl sm:text-3xl font-bold">Ders Programı → Takvim</h1>
+          <div className="inline-flex items-center gap-3 bg-slate-800 border border-slate-700 px-6 py-3 rounded-full shadow-md mb-4">
+            <Calendar className="text-indigo-400" size={30} />
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-100">Ders Programı → Takvim</h1>
           </div>
-          <p className="text-slate-600 dark:text-slate-400 text-lg max-w-2xl mx-auto">Excel (.xlsx) dosyanızı seçin, istediğiniz kurulun takvimini (.ics) saniyeler içinde indirin.</p>
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto">Excel (.xlsx) dosyanızı seçin, istediğiniz kurulun takvimini (.ics) saniyeler içinde indirin.</p>
         </header>
 
-        {/* --- Ana İçerik Alanı (2 Sütunlu Yapı) --- */}
-        <main className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* --- Ana İçerik Alanı (Geniş ekranlarda 2 sütunlu yapı) --- */}
+        <main className="grid grid-cols-1 xl:grid-cols-2 gap-8">
 
           {/* --- Sol Sütun: Kontrol Paneli --- */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 sm:p-8 space-y-8 border border-transparent dark:border-slate-700">
+          <div className="bg-slate-800 rounded-2xl shadow-xl p-6 sm:p-8 space-y-8 border border-slate-700">
             
             {/* Adım 1: Dosya Yükleme */}
             <section>
-              <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3">
-                <Upload className="text-indigo-500" size={24} />
+              <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3 text-slate-100">
+                <Upload className="text-indigo-400" size={24} />
                 1. Program Dosyasını Yükle
               </h2>
               <div className="flex flex-col sm:flex-row items-center gap-4">
                 <input type="file" accept=".xlsx" onChange={handleFileSelect} id="file-upload" className="hidden" />
-                <label htmlFor="file-upload" className="flex-grow w-full text-center cursor-pointer bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-400 border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-4 hover:bg-slate-100 dark:hover:bg-slate-600 transition truncate">
+                <label htmlFor="file-upload" className="flex-grow w-full text-center cursor-pointer bg-slate-700 text-slate-400 border-2 border-dashed border-slate-600 rounded-xl p-4 hover:bg-slate-600 hover:border-indigo-400 transition truncate">
                   {file ? `✅ ${file.name}` : 'Dosya seçmek için tıkla (.xlsx)'}
                 </label>
                 <button
                   onClick={processFile} disabled={loading || !file}
-                  className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed text-white font-semibold py-4 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-lg hover:shadow-indigo-500/50 focus:outline-none focus:ring-4 focus:ring-indigo-300"
+                  className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-800 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-semibold py-4 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-900/50 hover:shadow-indigo-500/50 focus:outline-none focus:ring-4 focus:ring-indigo-400"
                 >
                   {loading ? <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div> : <BookOpen size={20} />}
                   <span>İşle</span>
@@ -275,13 +232,13 @@ const ScheduleToCalendar = () => {
               </div>
             </section>
 
-            <hr className="border-slate-200 dark:border-slate-700" />
+            <hr className="border-slate-700" />
 
             {/* Adım 2: Kurul Seçimi */}
             {kurullar.length > 0 && (
               <section>
-                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3">
-                  <FileText className="text-indigo-500" size={24} />
+                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3 text-slate-100">
+                  <FileText className="text-indigo-400" size={24} />
                   2. Kurul Seç
                 </h2>
                 <div className="flex flex-wrap gap-2">
@@ -289,9 +246,9 @@ const ScheduleToCalendar = () => {
                     <button
                       key={kurul}
                       onClick={() => setActiveKurul(kurul)}
-                      className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-800 focus:ring-indigo-500 ${activeKurul === kurul
-                          ? 'bg-indigo-600 text-white shadow'
-                          : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600'
+                      className={`px-4 py-2 text-sm font-semibold rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-indigo-400 ${activeKurul === kurul
+                          ? 'bg-indigo-600 text-white shadow-md'
+                          : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                         }`}
                     >
                       {kurul}
@@ -304,31 +261,31 @@ const ScheduleToCalendar = () => {
             {/* Adım 3: İndirme Alanı */}
             {kurullar.length > 0 && (
               <section>
-                <hr className="border-slate-200 dark:border-slate-700 mb-8" />
-                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3">
-                  <Download className={parsedEvents.length > 0 ? "text-green-500" : "text-slate-500"} size={24} />
+                <hr className="border-slate-700 mb-8" />
+                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-3 text-slate-100">
+                  <Download className={parsedEvents.length > 0 ? "text-green-400" : "text-slate-500"} size={24} />
                   3. Takvimi İndir
                 </h2>
                 {parsedEvents.length > 0 ? (
                   <div className="space-y-4">
-                    <div className="bg-green-50 dark:bg-green-900/50 border border-green-200 dark:border-green-800 rounded-xl p-4 flex items-center gap-3">
-                      <CheckCircle className="text-green-600 dark:text-green-400" size={24}/>
-                      <p className="text-green-800 dark:text-green-200 font-medium">
+                    <div className="bg-green-900/50 border border-green-800 rounded-xl p-4 flex items-center gap-3">
+                      <CheckCircle className="text-green-400" size={24}/>
+                      <p className="text-green-200 font-medium">
                         "{activeKurul}" için {parsedEvents.length} ders bulundu. İndirmeye hazır!
                       </p>
                     </div>
                     <button
                       onClick={generateICSFile}
-                      className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg hover:shadow-green-500/50 focus:outline-none focus:ring-4 focus:ring-green-300"
+                      className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-4 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-green-900/50 hover:shadow-green-500/50 focus:outline-none focus:ring-4 focus:ring-green-400"
                     >
                       <Calendar size={20} />
                       {activeKurul} için .ics İndir
                     </button>
                   </div>
                 ) : (
-                  <div className="bg-yellow-50 dark:bg-yellow-900/50 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 flex items-center gap-3">
-                      <AlertTriangle className="text-yellow-600 dark:text-yellow-400" size={24}/>
-                      <p className="text-yellow-800 dark:text-yellow-200 font-medium">
+                  <div className="bg-yellow-900/50 border border-yellow-800 rounded-xl p-4 flex items-center gap-3">
+                      <AlertTriangle className="text-yellow-400" size={24}/>
+                      <p className="text-yellow-200 font-medium">
                         {error ? error : `"${activeKurul}" için ders bulunamadı.`}
                       </p>
                     </div>
@@ -338,40 +295,40 @@ const ScheduleToCalendar = () => {
           </div>
 
           {/* --- Sağ Sütun: Önizleme --- */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-6 sm:p-8 border border-transparent dark:border-slate-700">
-            <h2 className="text-2xl font-semibold mb-6 flex items-center gap-3">
-              <Clock className="text-indigo-500" size={24} />
+          <div className="bg-slate-800 rounded-2xl shadow-xl p-6 sm:p-8 border border-slate-700">
+            <h2 className="text-2xl font-semibold mb-6 flex items-center gap-3 text-slate-100">
+              <Clock className="text-indigo-400" size={24} />
               Program Önizlemesi
             </h2>
-            <div className="space-y-4 max-h-[36rem] overflow-y-auto pr-2">
+            <div className="space-y-4 max-h-[38rem] overflow-y-auto pr-2">
               {!file ? (
-                <div className="text-center text-slate-500 dark:text-slate-400 py-20 flex flex-col items-center">
+                <div className="text-center text-slate-500 py-20 flex flex-col items-center">
                   <Upload size={48} className="mb-4 opacity-50" />
                   <p className="font-semibold text-lg">Başlamak için bir dosya yükleyin</p>
                   <p>Excel dosyanızı yükleyip "İşle" butonuna basın.</p>
                 </div>
               ) : parsedEvents.length === 0 ? (
-                <div className="text-center text-slate-500 dark:text-slate-400 py-20 flex flex-col items-center">
+                <div className="text-center text-slate-500 py-20 flex flex-col items-center">
                   <BookOpen size={48} className="mb-4 opacity-50" />
                   <p className="font-semibold text-lg">Önizleme için veri bekleniyor</p>
                   <p>{kurullar.length > 0 ? `"${activeKurul}" kurulunda ders bulunamadı.` : 'Dosya henüz işlenmedi.'}</p>
                 </div>
               ) : (
                 parsedEvents.map((event, index) => (
-                  <div key={index} className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-4 border-l-4 border-indigo-500 hover:shadow-lg hover:scale-[1.02] transition-all duration-200">
+                  <div key={index} className="bg-slate-700/50 rounded-xl p-4 border-l-4 border-indigo-500 hover:shadow-lg hover:bg-slate-700 hover:scale-[1.02] transition-all duration-200">
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-semibold pr-2">{event.title}</h3>
-                      <span className="text-xs font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/50 px-2.5 py-1 rounded-full flex-shrink-0">
+                      <h3 className="font-semibold pr-2 text-slate-100">{event.title}</h3>
+                      <span className="text-xs font-medium text-indigo-300 bg-indigo-900/50 px-2.5 py-1 rounded-full flex-shrink-0">
                         {event.day}
                       </span>
                     </div>
-                    <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-sm text-slate-600 dark:text-slate-400 mb-2">
+                    <div className="flex items-center flex-wrap gap-x-4 gap-y-1 text-sm text-slate-400 mb-2">
                       <span className="flex items-center gap-1.5"><Clock size={14} />{event.startTime} - {event.endTime}</span>
                       <span className="flex items-center gap-1.5"><Calendar size={14} />{event.date.toLocaleDateString('tr-TR')}</span>
                     </div>
                     {event.instructor && (
-                      <p className="text-sm flex items-center gap-2 pt-1 text-slate-700 dark:text-slate-300">
-                        <User size={14} className="text-indigo-500 flex-shrink-0"/> 
+                      <p className="text-sm flex items-center gap-2 pt-1 text-slate-300">
+                        <User size={14} className="text-indigo-400 flex-shrink-0"/> 
                         <span className='font-medium'>{event.instructor}</span>
                       </p>
                     )}
