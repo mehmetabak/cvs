@@ -1,6 +1,6 @@
 # CVS 📅
 
-[![View on Vercel](https://vercel.com/button)](https://cvs-app.vercel.app)
+[![View on Vercel](https://vercel.com/button)](https://calendar.mehmetabak.space/)
 
 <p align="center">
   <a href="https://cvs-app.vercel.app/" target="_blank">
