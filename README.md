@@ -1,70 +1,66 @@
-# Getting Started with Create React App
+# CVS 📅
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[![View on Vercel](https://vercel.com/button)](https://cvs-app.vercel.app)
 
-## Available Scripts
+<p align="center">
+  <a href="https://cvs-app.vercel.app/" target="_blank">
+    <img src="./misc/preview.png" alt="CVS App Demo" width="100%" style="border-radius: 12px;"/>
+  </a>
+</p>
 
-In the project directory, you can run:
+🎓 **CVS (Course View System)** is a web-based utility designed to bridge the gap between traditional university Excel schedules and modern digital calendars. It parses complex semester schedules and converts them into manageable formats for your phone and smartwatch.
 
-### `npm start`
+Our goal is to eliminate the manual entry of classes and help students organize their academic life with just a few clicks.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## ✨ Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Excel to Calendar Conversion:** Instantly transforms university-formatted `.xlsx` files into standard `.ics` calendar files.
+- **Smart Parsing Logic:**
+  - **Auto-Detection:** Automatically identifies dates, times, topics, and instructors based on column headers like "GÜN", "SAAT", and "KONU".
+  - **Clean Output:** Filters out lunch breaks ("Öğle Arası") and empty slots automatically.
+- **Multi-Sheet Support:** Reads multiple sheets (Kurullar) from a single Excel file and allows you to select which specific term/committee you want to export.
+- **Live Preview:** View your parsed schedule in a modern, dark-themed list before downloading.
+- **Universal Compatibility:** The generated `.ics` files work seamlessly with **Apple Calendar (iOS/macOS)**, **Google Calendar**, and **Outlook**.
 
-### `npm test`
+## 🛠️ Usage
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Converting your schedule is incredibly simple:
 
-### `npm run build`
+1.  **Upload File:** Click the upload area to select your university schedule (`.xlsx` format).
+2.  **Process:** Click the **`İşle`** button to parse the file.
+3.  **Select Term:** Choose the specific "Kurul" (Committee/Term) you want to add to your calendar from the tabs provided.
+4.  **Review & Download:** Check the preview panel on the right. If everything looks good, click the **`İndir`** button to save the `.ics` file.
+5.  **Import:** Open the downloaded file on your phone or computer to add all events to your calendar instantly.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 💡 Upcoming Features & Enhancements
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+This project is under continuous development to support more university formats. Here is our roadmap:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **Drag & Drop Support:** Easier file uploading experience.
+- **Direct API Integration:** Sync directly with Google Calendar without downloading a file.
+- **Custom Mapping:** Interface to manually map columns if the Excel format differs.
+- **Mobile App:** A native wrapper for iOS and Android.
+- **English UI Support:** Multi-language support for the user interface.
 
-### `npm run eject`
+## 🤝 Contributing
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Contributions to this project are welcome! If you want to add support for a different university format or improve the parser, please fork the repository.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+1.  Fork the Project.
+2.  Create your Feature Branch (`git checkout -b feature/SmartParser`).
+3.  Commit your Changes (`git commit -m 'Add support for new column layout'`).
+4.  Push to the Branch (`git push origin feature/SmartParser`).
+5.  Open a Pull Request.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 🔧 Tech Stack
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+This project was brought to life with these amazing technologies:
 
-## Learn More
+- **React:** For building the interactive user interface.
+- **SheetJS (xlsx):** For robust Excel file parsing and data extraction.
+- **Tailwind CSS:** For the modern, responsive, and dark-mode styling.
+- **Lucide React:** For beautiful and consistent iconography.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 📄 License
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+This project is licensed under the MIT License - see the `LICENSE` file for details.
