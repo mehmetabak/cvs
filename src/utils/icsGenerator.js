@@ -48,13 +48,22 @@ export const generateICS = ({ events, kurulName = 'Kurul', alarmMinutes = 15 }) 
 
     const uid = event.id ? `bakircay-tip-${event.id}@tip.bakircay.edu.tr` : `bakircay-tip-${cleanKurul.replace(/\s+/g, '-')}-${startDateTime.getTime()}-${index}@tip.bakircay.edu.tr`;
 
-    let typeBadge = '';
-    if (event.type === 'T') typeBadge = '[Teorik] ';
-    else if (event.type === 'U') typeBadge = `[Pratik${event.group && event.group !== 'TÜM' ? `-${event.group}` : ''}] `;
-    else if (event.isExam) typeBadge = '[SINAV] ';
-    else if (event.isSelfStudy) typeBadge = '[Çalışma] ';
+    let typeSuffix = '';
+    if (event.type === 'T') {
+      if (!event.title.toLowerCase().includes('teorik')) {
+        typeSuffix = ' (Teorik)';
+      }
+    } else if (event.type === 'U') {
+      if (!event.title.toLowerCase().includes('pratik')) {
+        typeSuffix = event.group && event.group !== 'TÜM' ? ` (Pratik - ${event.group})` : ' (Pratik)';
+      }
+    } else if (event.isExam) {
+      if (!event.title.toLowerCase().includes('sınav') && !event.title.toLowerCase().includes('sinav')) {
+        typeSuffix = ' (Sınav)';
+      }
+    }
 
-    const fullSummary = `${typeBadge}${event.title}`.trim();
+    const fullSummary = `${event.title}${typeSuffix}`.trim();
 
     const descParts = [
       `Ders: ${event.title}`,

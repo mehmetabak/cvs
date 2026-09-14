@@ -3,15 +3,17 @@ import {
   Calendar, Upload, Clock, BookOpen, User, 
   CheckCircle2, AlertTriangle, Search, Filter, HelpCircle, 
   GraduationCap, Sparkles, Layers, FileSpreadsheet, FileText, 
-  Bell, ChevronRight, X, Info, Trash2, RefreshCw
+  Bell, ChevronRight, X, Info, Trash2, RefreshCw, BarChart3
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { BAKIRCAY_KURULLAR_2026_2027 } from './data/kurullarData';
 import { generateICS, generateCancellationICS } from './utils/icsGenerator';
 import { parsePDFSchedule } from './utils/pdfParser';
+import ExamAnalyticsView from './components/ExamAnalyticsView';
 
 const ScheduleToCalendar = () => {
   // --- STATE (DURUM) YÖNETİMİ ---
+  const [activeView, setActiveView] = useState('calendar'); // 'calendar' | 'analytics'
   const [activeMode, setActiveMode] = useState('preset');
 
   // Hazır Mod State'leri
@@ -374,6 +376,34 @@ const ScheduleToCalendar = () => {
           </div>
         </header>
 
+        {/* --- ANA BÖLÜM / GÖRÜNÜM SEÇİMİ (TAKVİM & SINAV ANALİZİ) --- */}
+        <div className="flex items-center justify-center">
+          <div className="inline-flex p-1.5 bg-slate-900/90 rounded-2xl border border-slate-800 shadow-xl max-w-md w-full">
+            <button
+              onClick={() => setActiveView('calendar')}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                activeView === 'calendar'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-950/60'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Calendar size={16} />
+              <span>Program & Takvim</span>
+            </button>
+            <button
+              onClick={() => setActiveView('analytics')}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                activeView === 'analytics'
+                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-950/60'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <BarChart3 size={16} />
+              <span>Sınav & Ders Oran Analizi</span>
+            </button>
+          </div>
+        </div>
+
         {/* --- MOD SEÇİM SEKMELERİ (3 MOD) --- */}
         <nav aria-label="Program Kaynağı Seçimi" className="flex flex-wrap gap-2 p-1.5 bg-slate-900/90 rounded-2xl border border-slate-800/80 max-w-2xl mx-auto shadow-inner">
           <button
@@ -415,7 +445,27 @@ const ScheduleToCalendar = () => {
           </button>
         </nav>
 
-        {/* --- ANA 2 SÜTUNLU YAPI --- */}
+        {/* --- KURUL HIZLI SEÇİMİ (ANALİTİK MODUNDA DA ERİŞİLEBİLİR) --- */}
+        {activeView === 'analytics' && activeMode === 'preset' && (
+          <div className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto p-2 rounded-2xl bg-slate-900/60 border border-slate-800">
+            {BAKIRCAY_KURULLAR_2026_2027.map(k => (
+              <button
+                key={k.id}
+                onClick={() => setSelectedPresetId(k.id)}
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border ${
+                  selectedPresetId === k.id
+                    ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-950/50'
+                    : 'bg-slate-800/80 text-slate-300 border-slate-700 hover:bg-slate-700'
+                }`}
+              >
+                {k.shortName}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* --- GÖRÜNÜM İÇERİĞİ: TAKVİM VEYA SINAV ANALİZİ --- */}
+        {activeView === 'calendar' ? (
         <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
           {/* === SOL SÜTUN: KONTROL VE AYARLAR (5 KOLON) === */}
@@ -864,6 +914,9 @@ const ScheduleToCalendar = () => {
           </div>
 
         </main>
+        ) : (
+          <ExamAnalyticsView events={rawEvents} kurulName={currentKurulName} />
+        )}
 
         {/* --- GOOGLE TAKVİM TEMİZLEME REHBERİ MODALI --- */}
         {showCleanupModal && (
