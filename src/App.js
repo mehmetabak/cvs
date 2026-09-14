@@ -3,16 +3,15 @@ import {
   Calendar, Upload, Clock, BookOpen, User, 
   CheckCircle2, AlertTriangle, Search, Filter, HelpCircle, 
   GraduationCap, Sparkles, Layers, FileSpreadsheet, FileText, 
-  Bell, ChevronRight, X, Info
+  Bell, ChevronRight, X, Info, Trash2, RefreshCw
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { BAKIRCAY_KURULLAR_2026_2027 } from './data/kurullarData';
-import { generateICS } from './utils/icsGenerator';
+import { generateICS, generateCancellationICS } from './utils/icsGenerator';
 import { parsePDFSchedule } from './utils/pdfParser';
 
 const ScheduleToCalendar = () => {
   // --- STATE (DURUM) YÖNETİMİ ---
-  // Çalışma modu: 'preset' (Hazır 2026-2027 Kurulları) | 'pdf' (PDF Yükleme) | 'excel' (Klasik Excel)
   const [activeMode, setActiveMode] = useState('preset');
 
   // Hazır Mod State'leri
@@ -32,11 +31,12 @@ const ScheduleToCalendar = () => {
 
   // Akıllı Filtreler
   const [selectedGroup, setSelectedGroup] = useState('all'); // 'all' | 'G1' | 'G2'
-  const [includeSelfStudy, setIncludeSelfStudy] = useState(false); // Bağımsız çalışma saati
+  const [includeSelfStudy, setIncludeSelfStudy] = useState(true); // Tüm dersler eksiksiz gelsin diye varsayılan: true
   const [alarmMinutes, setAlarmMinutes] = useState(15); // 0, 15, 30, 60
   const [selectedWeek, setSelectedWeek] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showCleanupModal, setShowCleanupModal] = useState(false);
 
   // 1. HAZIR KURUL MODU YÜKLEME
   useEffect(() => {
@@ -45,12 +45,12 @@ const ScheduleToCalendar = () => {
       if (preset && preset.events) {
         setRawEvents(preset.events);
         setError('');
-        setSuccessMessage(`"${preset.shortName}" yüklendi.`);
+        setSuccessMessage(`"${preset.shortName}" yüklendi (${preset.events.length} ders).`);
       }
     }
   }, [activeMode, selectedPresetId]);
 
-  // 2. EXCEL AYRIŞTIRMA MANTIĞI (Mevcut Mantık Korundu & İyileştirildi)
+  // 2. EXCEL AYRIŞTIRMA MANTIĞI
   const parseExcelSchedule = useCallback((data, sheetName) => {
     const events = [];
     let headerRowIndex = -1;
@@ -108,7 +108,7 @@ const ScheduleToCalendar = () => {
 
       if (!timeSlot || !topic || topic.toUpperCase().includes('ÖĞLE ARASI')) continue;
 
-      const timeMatch = timeSlot.match(/(\d{2}):(\d{2})\s*[-–]\s*(\d{2}):(\d{2})/);
+      const timeMatch = timeSlot.match(/(\d{2}:\d{2})\s*[-–]\s*(\d{2}:\d{2})/);
       if (!timeMatch) continue;
 
       const [, startHour, startMinute, endHour, endMinute] = timeMatch;
@@ -202,7 +202,7 @@ const ScheduleToCalendar = () => {
           setError("PDF dosyasından ders programı ayrıştırılamadı. Dosyanın üniversitenin resmi formatında olduğundan emin olun.");
         } else {
           setRawEvents(result.events);
-          setSuccessMessage(`PDF dosyasından ${result.events.length} ders başarıyla çıkarıldı.`);
+          setSuccessMessage(`PDF dosyasından ${result.events.length} ders eksiksiz çıkarıldı.`);
         }
       }
     } catch (err) {
@@ -250,8 +250,10 @@ const ScheduleToCalendar = () => {
     let teorik = 0;
     let pratik = 0;
     let sinav = 0;
+    let calisma = 0;
     filteredEvents.forEach(e => {
       if (e.isExam) sinav++;
+      else if (e.isSelfStudy) calisma++;
       else if (e.type === 'U') pratik++;
       else if (e.type === 'T') teorik++;
     });
@@ -259,7 +261,8 @@ const ScheduleToCalendar = () => {
       total: filteredEvents.length,
       teorik,
       pratik,
-      sinav
+      sinav,
+      calisma
     };
   }, [filteredEvents]);
 
@@ -294,6 +297,18 @@ const ScheduleToCalendar = () => {
     });
   };
 
+  // ESKİ GOOGLE TAKVİM ETKİNLİKLERİNİ İPTAL ETME (.ICS)
+  const handleDownloadCancellationICS = () => {
+    if (rawEvents.length === 0) {
+      alert('İptal edilecek etkinlik bulunamadı.');
+      return;
+    }
+    generateCancellationICS({
+      events: rawEvents,
+      kurulName: currentKurulName
+    });
+  };
+
   // Mevcut kurulun haftaları
   const availableWeeks = useMemo(() => {
     const weeks = new Set();
@@ -305,10 +320,34 @@ const ScheduleToCalendar = () => {
 
   return (
     <div className="min-h-screen bg-[#090d16] text-slate-100 p-3 sm:p-6 lg:p-10 font-sans selection:bg-indigo-500 selection:text-white">
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto space-y-6">
+
+        {/* --- GOOGLE TAKVİM UYARI & DÜZELTME BİLGİLENDİRME ŞERİDİ --- */}
+        <aside aria-label="Google Takvim Bildirimi" className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle size={22} />
+            </div>
+            <div className="space-y-0.5">
+              <div className="font-semibold text-amber-300 text-sm sm:text-base">
+                Daha önce Google Takvim'e eksik program eklediyseniz:
+              </div>
+              <p className="text-xs text-slate-300">
+                Tüm dersler (360 ders) eksiksiz olarak güncellendi. Eski eklenenleri nasıl sileceğinizi veya iptal edeceğinizi öğrenmek için tıklayın.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowCleanupModal(true)}
+            className="w-full sm:w-auto px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 flex-shrink-0 shadow"
+          >
+            <Trash2 size={16} />
+            <span>Google Takvimi Temizleme Rehberi</span>
+          </button>
+        </aside>
 
         {/* --- ÜST BAŞLIK & REHBER BUTONU --- */}
-        <header className="relative flex flex-col md:flex-row items-center justify-between gap-6 border-b border-slate-800/80 pb-8">
+        <header className="relative flex flex-col md:flex-row items-center justify-between gap-6 border-b border-slate-800/80 pb-6">
           <div className="space-y-2 text-center md:text-left">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs sm:text-sm font-medium">
               <GraduationCap size={16} className="text-indigo-400" />
@@ -317,20 +356,22 @@ const ScheduleToCalendar = () => {
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white flex items-center justify-center md:justify-start gap-3">
               <span>Ders Programı</span>
               <span className="text-indigo-400 font-light">→</span>
-              <span className="bg-gradient-to-r from-indigo-400 via-indigo-300 to-sky-400 bg-clip-text text-transparent">Akıllı Takvim (.ics)</span>
+              <span className="bg-gradient-to-r from-indigo-400 via-indigo-300 to-sky-400 bg-clip-text text-transparent">Eksiksiz Takvim (.ics)</span>
             </h1>
             <p className="text-slate-400 text-sm sm:text-base max-w-2xl">
-              Fakülte ders programlarını saniyeler içinde Apple Calendar, Google Calendar ve Outlook uyumlu takvime dönüştürün.
+              10:15, 13:30 ve 16:30 dahil tüm ders saatleri, sınavlar ve pratikler %100 eksiksiz aktarılır.
             </p>
           </div>
 
-          <button
-            onClick={() => setShowHelpModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/70 text-slate-300 hover:text-white text-sm font-medium transition shadow-sm hover:border-slate-600"
-          >
-            <HelpCircle size={18} className="text-indigo-400" />
-            <span>Takvime Nasıl Eklenir?</span>
-          </button>
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => setShowHelpModal(true)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/70 text-slate-300 hover:text-white text-sm font-medium transition shadow-sm hover:border-slate-600"
+            >
+              <HelpCircle size={18} className="text-indigo-400" />
+              <span>Takvime Nasıl Eklenir?</span>
+            </button>
+          </div>
         </header>
 
         {/* --- MOD SEÇİM SEKMELERİ (3 MOD) --- */}
@@ -345,7 +386,7 @@ const ScheduleToCalendar = () => {
           >
             <Sparkles size={16} className={activeMode === 'preset' ? 'text-white' : 'text-indigo-400'} />
             <span>2026-2027 Kurulları</span>
-            <span className="px-1.5 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-indigo-500/30 text-indigo-200">Hazır</span>
+            <span className="px-1.5 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-indigo-500/30 text-indigo-200">Tam</span>
           </button>
 
           <button
@@ -389,7 +430,7 @@ const ScheduleToCalendar = () => {
                 </h2>
                 {activeMode === 'preset' && (
                   <span className="text-xs text-indigo-300 font-medium bg-indigo-950/70 border border-indigo-800/60 px-2.5 py-1 rounded-full">
-                    Dönem 2 (4 Kurul)
+                    Dönem 2
                   </span>
                 )}
               </div>
@@ -417,7 +458,7 @@ const ScheduleToCalendar = () => {
                           <div className="text-xs text-slate-400 flex items-center gap-2 flex-wrap">
                             <span>📅 {kurul.startDate} – {kurul.endDate}</span>
                             <span>•</span>
-                            <span>{kurul.totalWeeks} Hafta ({kurul.eventCount} Etkinlik)</span>
+                            <span className="text-emerald-400 font-medium">{kurul.eventCount} Ders Saati</span>
                           </div>
                         </div>
                         <ChevronRight size={18} className={isSelected ? 'text-indigo-400' : 'text-slate-600'} />
@@ -429,9 +470,9 @@ const ScheduleToCalendar = () => {
                     <div className="mt-4 p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 space-y-1.5">
                       <div className="flex items-center gap-1.5 text-slate-300 font-medium">
                         <Info size={14} className="text-indigo-400" />
-                        <span>Resmi Fakülte Bilgisi:</span>
+                        <span>Resmi Fakülte Programı:</span>
                       </div>
-                      <p>{currentPresetMeta.name}</p>
+                      <p className="text-slate-200">{currentPresetMeta.name}</p>
                       <p className="text-[11px] text-slate-400">Başlama: {currentPresetMeta.startDate} • Bitiş: {currentPresetMeta.endDate}</p>
                     </div>
                   )}
@@ -470,7 +511,7 @@ const ScheduleToCalendar = () => {
                       ) : (
                         <BookOpen size={18} />
                       )}
-                      <span>{loading ? 'Ayrıştırılıyor...' : 'Programı Ayrıştır ve Yükle'}</span>
+                      <span>{loading ? 'Eksiksiz Ayrıştırılıyor...' : 'Programı Ayrıştır ve Yükle'}</span>
                     </button>
                   </div>
 
@@ -513,7 +554,7 @@ const ScheduleToCalendar = () => {
               )}
             </div>
 
-            {/* ADIM 2: TIP FAKÜLTESİ AKILLI FİLTRELERİ */}
+            {/* ADIM 2: AKILLI FİLTRELER */}
             <div className="glass-panel rounded-2xl p-5 sm:p-6 space-y-5">
               <h2 className="text-lg font-bold text-white flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm font-bold">2</div>
@@ -568,7 +609,9 @@ const ScheduleToCalendar = () => {
                 <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-800/40 border border-slate-800 hover:border-slate-700 transition">
                   <div className="space-y-0.5">
                     <div className="text-sm font-medium text-slate-200">Bağımsız Çalışma Saatleri</div>
-                    <div className="text-xs text-slate-400">Takvimde boş çalışma saatlerini göster</div>
+                    <div className="text-xs text-slate-400">
+                      {includeSelfStudy ? 'Çalışma saatleri takvime ekleniyor' : 'Sadece dersler ve sınavlar ekleniyor'}
+                    </div>
                   </div>
                   <button
                     onClick={() => setIncludeSelfStudy(!includeSelfStudy)}
@@ -608,17 +651,17 @@ const ScheduleToCalendar = () => {
             <div className="glass-panel rounded-2xl p-5 sm:p-6 space-y-4">
               <h2 className="text-lg font-bold text-white flex items-center gap-2.5">
                 <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">3</div>
-                <span>Takvimi İndir (.ics)</span>
+                <span>Eksiksiz Takvimi İndir (.ics)</span>
               </h2>
 
               <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
                 <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span>Hazırlanan Program:</span>
+                  <span>Program:</span>
                   <span className="font-semibold text-slate-200 truncate max-w-[200px]">{currentKurulName}</span>
                 </div>
                 <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span>Aktarılacak Ders Sayısı:</span>
-                  <span className="font-bold text-emerald-400 text-sm">{filteredEvents.length} Ders</span>
+                  <span>Aktarılacak Toplam Etkinlik:</span>
+                  <span className="font-bold text-emerald-400 text-sm">{filteredEvents.length} Ders Saati</span>
                 </div>
                 <div className="flex items-center justify-between text-xs text-slate-400">
                   <span>Seçili Grup:</span>
@@ -636,12 +679,18 @@ const ScheduleToCalendar = () => {
                 className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2.5 shadow-lg shadow-emerald-950/50 hover:shadow-emerald-900/50 hover:scale-[1.01]"
               >
                 <Calendar size={20} />
-                <span>Takvimi İndir (.ics)</span>
+                <span>Eksiksiz Takvimi İndir (.ics)</span>
               </button>
 
-              <p className="text-[11px] text-center text-slate-400">
-                İndirdiğiniz .ics dosyasını iPhone, Mac, Google Calendar ve Outlook'a doğrudan aktarabilirsiniz.
-              </p>
+              <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
+                <button
+                  onClick={() => setShowCleanupModal(true)}
+                  className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1.5 transition underline decoration-dotted"
+                >
+                  <Trash2 size={13} />
+                  <span>Google Takvime daha önce ekledim, nasıl temizlerim?</span>
+                </button>
+              </div>
             </div>
 
           </div>
@@ -692,7 +741,7 @@ const ScheduleToCalendar = () => {
               {/* İstatistik Şeridi */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
                 <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80 text-center">
-                  <div className="text-xs text-slate-400">Toplam Ders</div>
+                  <div className="text-xs text-slate-400">Toplam Saat</div>
                   <div className="text-lg font-bold text-white">{stats.total}</div>
                 </div>
                 <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80 text-center">
@@ -816,6 +865,82 @@ const ScheduleToCalendar = () => {
 
         </main>
 
+        {/* --- GOOGLE TAKVİM TEMİZLEME REHBERİ MODALI --- */}
+        {showCleanupModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+            <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full p-6 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div className="flex items-center gap-2.5 text-amber-400">
+                  <Trash2 size={22} />
+                  <h3 className="text-lg font-bold text-white">Google Takvim'den Eski/Eksik Dersleri Temizleme</h3>
+                </div>
+                <button
+                  onClick={() => setShowCleanupModal(false)}
+                  className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="space-y-4 text-sm text-slate-300">
+                <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-800/60 space-y-2">
+                  <div className="font-semibold text-emerald-300 flex items-center gap-2">
+                    <span>🌟 1. YÖNTEM: Ayrı Bir Takvim Olarak Eklediyseniz (En Kolay Yol - 5 Saniye)</span>
+                  </div>
+                  <ol className="list-decimal list-inside text-xs text-slate-300 space-y-1 pl-1">
+                    <li>Bilgisayarınızda veya telefonunuzda <b>calendar.google.com</b> adresini açın.</li>
+                    <li>Sol menüde <b>"Diğer Takvimler"</b> veya <b>"Takvimlerim"</b> altında eklediğiniz takvimi bulun.</li>
+                    <li>Üzerine gelip <b>üç noktaya (⋮)</b> tıklayın → <b>Ayarlar ve Paylaşım</b> seçeneğini seçin.</li>
+                    <li>En alta kaydırıp <b>"Takvimi Sil"</b> butonuna basın. Tüm eski dersler anında silinir!</li>
+                    <li>Ardından ana sayfadaki yeşil <b>"Eksiksiz Takvimi İndir (.ics)"</b> butonuna basıp yeni dosyayı yükleyin.</li>
+                  </ol>
+                </div>
+
+                <div className="p-4 rounded-xl bg-indigo-950/40 border border-indigo-800/60 space-y-3">
+                  <div className="font-semibold text-indigo-300 flex items-center gap-2">
+                    <span>🔄 2. YÖNTEM: Otomatik İptal / Temizleme Dosyası Kullanma</span>
+                  </div>
+                  <p className="text-xs text-slate-300">
+                    Aşağıdaki butona basarak özel hazırlanmış <b>İptal Takvimi (.ics)</b> dosyasını indirin. Bu dosyayı Google Takvim'e aktardığınızda, aynı ID'ye sahip eski etkinlikleri otomatik olarak iptal edecektir:
+                  </p>
+                  <button
+                    onClick={handleDownloadCancellationICS}
+                    className="w-full py-3 px-4 rounded-xl bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow"
+                  >
+                    <RefreshCw size={16} />
+                    <span>Eski Eklenenleri İptal Etme Dosyasını İndir (.ics)</span>
+                  </button>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-2">
+                  <div className="font-semibold text-white flex items-center gap-2">
+                    <span>🔍 3. YÖNTEM: Ana Takviminizden Arama ile Toplu Silme</span>
+                  </div>
+                  <p className="text-xs text-slate-300">
+                    calendar.google.com üst arama kutusuna <b>"İzmir Bakırçay Üniversitesi"</b> veya <b>"Kurul I"</b> yazıp Enter'a basın. Çıkan etkinlikleri seçip Çöp Kutusu simgesiyle silebilirsiniz.
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
+                <button
+                  onClick={handleDownloadICS}
+                  className="w-full sm:flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2"
+                >
+                  <Calendar size={18} />
+                  <span>Yeni Eksiksiz Takvimi İndir (.ics)</span>
+                </button>
+                <button
+                  onClick={() => setShowCleanupModal(false)}
+                  className="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition"
+                >
+                  Kapat
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* --- YARDIM & TAKVİME EKLEME MODALI --- */}
         {showHelpModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
@@ -848,7 +973,7 @@ const ScheduleToCalendar = () => {
                     <span>🌐 Google Calendar (Android & Web)</span>
                   </div>
                   <p className="text-xs text-slate-400">
-                    Bilgisayarınızda veya telefon tarayıcınızda calendar.google.com adresine gidin. Ayarlar ⚙️ → "İçe ve Dışa Aktar" bölümünden indirdiğiniz .ics dosyasını yükleyin.
+                    calendar.google.com adresinde Ayarlar ⚙️ → "İçe ve Dışa Aktar" bölümünden indirdiğiniz .ics dosyasını yükleyin. (İpucu: Sol menüden '+' ile yeni bir "Bakırçay Tıp" takvimi açıp ona yüklerseniz, dilediğinizde tek tıkla gizleyebilir veya silebilirsiniz).
                   </p>
                 </div>
 
