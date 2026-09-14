@@ -68,3 +68,27 @@ body {
 .glow-emerald {
   box-shadow: 0 0 35px -5px rgba(16, 185, 129, 0.2);
 }
+
+/* Scrollbar Gizleyici (Mobilde yatay gün seçici için) */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Takvim Izgarası ve Zaman Çizelgesi */
+.timeline-rail {
+  position: absolute;
+  left: 20px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.5) 0%, rgba(16, 185, 129, 0.3) 50%, rgba(51, 65, 85, 0.2) 100%);
+}
+
+.calendar-slot-border {
+  border-bottom: 1px solid rgba(51, 65, 85, 0.4);
+}
+

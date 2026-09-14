@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
-  Calendar, Upload, Clock, BookOpen, User, 
-  CheckCircle2, AlertTriangle, Search, Filter, HelpCircle, 
+  Calendar, Upload, BookOpen, 
+  CheckCircle2, AlertTriangle, HelpCircle, 
   GraduationCap, Sparkles, Layers, FileSpreadsheet, FileText, 
   Bell, ChevronRight, X, Info, Trash2, RefreshCw, BarChart3
 } from 'lucide-react';
@@ -10,6 +10,7 @@ import { BAKIRCAY_KURULLAR_2026_2027 } from './data/kurullarData';
 import { generateICS, generateCancellationICS } from './utils/icsGenerator';
 import { parsePDFSchedule } from './utils/pdfParser';
 import ExamAnalyticsView from './components/ExamAnalyticsView';
+import ModernCalendarView from './components/ModernCalendarView';
 
 const ScheduleToCalendar = () => {
   // --- STATE (DURUM) YÖNETİMİ ---
@@ -745,172 +746,21 @@ const ScheduleToCalendar = () => {
 
           </div>
 
-          {/* === SAĞ SÜTUN: PROGRAM ÖNİZLEMESİ (7 KOLON) === */}
+          {/* === SAĞ SÜTUN: ETKİLEŞİMLİ MODERN TAKVİM GÖRÜNÜMÜ (7 KOLON) === */}
           <div className="lg:col-span-7 space-y-4">
-            <div className="glass-panel rounded-2xl p-5 sm:p-6 border border-slate-800">
-              
-              {/* Üst Arama & Hafta Filtresi */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-5">
-                <div className="relative flex-1">
-                  <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
-                  <input
-                    type="text"
-                    placeholder="Ders adı, hoca veya konu ara..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl pl-9 pr-3.5 py-2 text-xs sm:text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-indigo-500 transition"
-                  />
-                  {searchTerm && (
-                    <button
-                      onClick={() => setSearchTerm('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
-                    >
-                      <X size={14} />
-                    </button>
-                  )}
-                </div>
-
-                {/* Hafta Filtresi */}
-                {availableWeeks.length > 0 && (
-                  <div className="flex items-center gap-2">
-                    <Filter size={14} className="text-slate-400" />
-                    <select
-                      value={selectedWeek}
-                      onChange={(e) => setSelectedWeek(e.target.value)}
-                      className="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-indigo-500"
-                    >
-                      <option value="all">Tüm Haftalar</option>
-                      {availableWeeks.map(w => (
-                        <option key={w} value={w}>{w}. Hafta</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-              </div>
-
-              {/* İstatistik Şeridi */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-5">
-                <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80 text-center">
-                  <div className="text-xs text-slate-400">Toplam Saat</div>
-                  <div className="text-lg font-bold text-white">{stats.total}</div>
-                </div>
-                <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80 text-center">
-                  <div className="text-xs text-indigo-400">Teorik (T)</div>
-                  <div className="text-lg font-bold text-indigo-300">{stats.teorik}</div>
-                </div>
-                <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80 text-center">
-                  <div className="text-xs text-emerald-400">Pratik (U)</div>
-                  <div className="text-lg font-bold text-emerald-300">{stats.pratik}</div>
-                </div>
-                <div className="p-2.5 rounded-xl bg-slate-900/60 border border-slate-800/80 text-center">
-                  <div className="text-xs text-rose-400">Sınavlar</div>
-                  <div className="text-lg font-bold text-rose-300">{stats.sinav}</div>
-                </div>
-              </div>
-
-              {/* Ders Kartları Listesi */}
-              <div className="space-y-3 max-h-[42rem] overflow-y-auto pr-1.5">
-                {filteredEvents.length === 0 ? (
-                  <div className="py-20 text-center text-slate-400 space-y-3">
-                    <BookOpen size={40} className="mx-auto opacity-30 text-slate-400" />
-                    <p className="text-base font-semibold text-slate-300">Görüntülenecek ders bulunamadı</p>
-                    <p className="text-xs max-w-sm mx-auto">
-                      Arama filtrenizi temizlemeyi veya bağımsız çalışma saatlerini açmayı deneyebilirsiniz.
-                    </p>
-                  </div>
-                ) : (
-                  filteredEvents.map((event, idx) => {
-                    const isTeorik = event.type === 'T';
-                    const isPratik = event.type === 'U';
-                    const isExam = event.isExam;
-                    const isSelf = event.isSelfStudy;
-
-                    return (
-                      <div
-                        key={event.id || idx}
-                        className={`p-4 rounded-xl border transition-all duration-200 glass-card ${
-                          isExam
-                            ? 'border-rose-500/40 bg-rose-950/20 hover:border-rose-400'
-                            : isPratik
-                            ? 'border-emerald-500/20 hover:border-emerald-500/50'
-                            : 'hover:border-indigo-500/40'
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-3 mb-2">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            {/* Tür Rozeti */}
-                            {isExam ? (
-                              <span className="px-2.5 py-0.5 rounded-md bg-rose-500/20 border border-rose-500/30 text-rose-300 text-[11px] font-bold tracking-wide">
-                                SINAV
-                              </span>
-                            ) : isPratik ? (
-                              <span className="px-2.5 py-0.5 rounded-md bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold">
-                                Pratik (U)
-                              </span>
-                            ) : isTeorik ? (
-                              <span className="px-2.5 py-0.5 rounded-md bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-[11px] font-semibold">
-                                Teorik (T)
-                              </span>
-                            ) : isSelf ? (
-                              <span className="px-2.5 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-slate-400 text-[11px] font-medium">
-                                Çalışma
-                              </span>
-                            ) : (
-                              <span className="px-2.5 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-slate-300 text-[11px] font-medium">
-                                {event.type}
-                              </span>
-                            )}
-
-                            {/* Grup Rozeti */}
-                            {event.group && event.group !== 'TÜM' && (
-                              <span className="px-2 py-0.5 rounded-md bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[11px] font-bold">
-                                {event.group}
-                              </span>
-                            )}
-
-                            {/* Hafta Rozeti */}
-                            {event.week && (
-                              <span className="text-[11px] text-slate-400">
-                                {event.week}. Hafta
-                              </span>
-                            )}
-                          </div>
-
-                          <div className="flex items-center gap-1.5 text-xs text-slate-400 flex-shrink-0">
-                            <Clock size={13} className="text-indigo-400" />
-                            <span className="font-mono font-medium text-slate-300">{event.startTime} - {event.endTime}</span>
-                          </div>
-                        </div>
-
-                        {/* Ders Başlığı */}
-                        <h3 className="font-medium text-sm sm:text-base text-white leading-snug mb-2">
-                          {event.title}
-                        </h3>
-
-                        {/* Alt Bilgiler: Hoca, Gün ve Tarih */}
-                        <div className="flex items-center justify-between flex-wrap gap-2 text-xs text-slate-400 pt-1 border-t border-slate-800/60">
-                          <div className="flex items-center gap-2">
-                            {event.instructor ? (
-                              <span className="flex items-center gap-1.5 text-slate-300">
-                                <User size={13} className="text-indigo-400 flex-shrink-0" />
-                                <span className="truncate max-w-[280px]">{event.instructor}</span>
-                              </span>
-                            ) : (
-                              <span className="text-slate-400 italic">Öğretim üyesi belirtilmemiş</span>
-                            )}
-                          </div>
-
-                          <div className="flex items-center gap-2 font-mono text-[11px] text-slate-400">
-                            <span>{event.day}</span>
-                            {event.date && <span>• {new Date(event.date).toLocaleDateString('tr-TR')}</span>}
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>
+            <ModernCalendarView
+              events={filteredEvents}
+              allWeeks={availableWeeks}
+              selectedWeek={selectedWeek}
+              onSelectWeek={setSelectedWeek}
+              kurulName={currentKurulName}
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              selectedGroup={selectedGroup}
+              includeSelfStudy={includeSelfStudy}
+              onDownloadICS={handleDownloadICS}
+              stats={stats}
+            />
           </div>
 
         </main>
