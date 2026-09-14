@@ -1,8 +1,14 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('renders header and preset kurullar', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+  const titleElements = screen.getAllByText(/Ders Programı/i);
+  expect(titleElements.length).toBeGreaterThan(0);
+
+  const presetTab = screen.getByText(/2026-2027 Kurulları/i);
+  expect(presetTab).toBeInTheDocument();
+
+  const kurulButtons = screen.getAllByText(/Kurul I \(Sinir Sistemi\)/i);
+  expect(kurulButtons.length).toBeGreaterThan(0);
 });
