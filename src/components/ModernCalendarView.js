@@ -5,7 +5,7 @@ import {
   BookOpen, X, Sparkles, 
   Calendar as CalendarIcon
 } from 'lucide-react';
-import { extractDepartmentName } from '../utils/examAnalytics';
+import { extractDepartmentName, isDemoEvent } from '../utils/examAnalytics';
 
 // Tıp Fakültesi Standart Saat Aralıkları
 const STANDARD_TIME_SLOTS = [
@@ -460,6 +460,7 @@ const ModernCalendarView = ({
                         >
                           {slotEvents.map((evt) => {
                             const isExam = evt.isExam;
+                            const isDemo = isDemoEvent(evt.title);
                             const isPratik = evt.type === 'U';
                             const isSelf = evt.isSelfStudy;
 
@@ -470,6 +471,8 @@ const ModernCalendarView = ({
                                 className={`w-full text-left p-2 rounded-lg border transition-all duration-150 shadow-sm relative overflow-hidden group ${
                                   isExam
                                     ? 'bg-rose-950/30 border-rose-500/40 hover:border-rose-400 text-rose-200'
+                                    : isDemo
+                                    ? 'bg-zinc-900 border-zinc-700/80 hover:border-zinc-500 text-zinc-200'
                                     : isPratik
                                     ? 'bg-emerald-950/20 border-emerald-500/30 hover:border-emerald-400 text-emerald-100'
                                     : isSelf
@@ -480,7 +483,7 @@ const ModernCalendarView = ({
                                 {/* Sol Anabilim Dalı Renk Şeridi */}
                                 <div 
                                   className="absolute left-0 top-0 bottom-0 w-1"
-                                  style={{ backgroundColor: isExam ? '#f43f5e' : isPratik ? '#10b981' : isSelf ? '#52525b' : '#f59e0b' }}
+                                  style={{ backgroundColor: isExam ? '#f43f5e' : isDemo ? '#71717a' : isPratik ? '#10b981' : isSelf ? '#52525b' : '#f59e0b' }}
                                 />
 
                                 <div className="pl-1.5 space-y-1">
@@ -489,13 +492,15 @@ const ModernCalendarView = ({
                                     <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded font-mono ${
                                       isExam 
                                         ? 'bg-rose-500/20 text-rose-300' 
+                                        : isDemo
+                                        ? 'bg-zinc-800 text-zinc-300 border border-zinc-700'
                                         : isPratik 
                                         ? 'bg-emerald-500/20 text-emerald-300' 
                                         : isSelf
                                         ? 'bg-zinc-800 text-zinc-400'
                                         : 'bg-amber-400/10 text-amber-300'
                                     }`}>
-                                      {isExam ? 'SINAV' : isPratik ? 'Pratik' : isSelf ? 'Çalışma' : 'Teorik'}
+                                      {isExam ? 'SINAV' : isDemo ? 'Demo Tekrar' : isPratik ? 'Pratik' : isSelf ? 'Çalışma' : 'Teorik'}
                                     </span>
 
                                     {evt.group && evt.group !== 'TÜM' && (
@@ -583,6 +588,7 @@ const ModernCalendarView = ({
             ) : (
               dailyEvents.map((event, idx) => {
                 const isExam = event.isExam;
+                const isDemo = isDemoEvent(event.title);
                 const isPratik = event.type === 'U';
                 const isSelf = event.isSelfStudy;
 
@@ -592,6 +598,8 @@ const ModernCalendarView = ({
                     <div className={`absolute -left-[29px] sm:-left-[37px] top-4 w-3.5 h-3.5 rounded-full border-2 border-zinc-950 flex items-center justify-center transition-transform group-hover:scale-125 ${
                       isExam
                         ? 'bg-rose-500 ring-4 ring-rose-500/20'
+                        : isDemo
+                        ? 'bg-zinc-400 ring-4 ring-zinc-500/20'
                         : isPratik
                         ? 'bg-emerald-500 ring-4 ring-emerald-500/20'
                         : isSelf
@@ -605,6 +613,8 @@ const ModernCalendarView = ({
                       className={`w-full text-left p-3.5 rounded-lg border transition-all duration-150 glass-card hover:translate-x-1 ${
                         isExam
                           ? 'border-rose-500/40 bg-rose-950/20 hover:border-rose-400'
+                          : isDemo
+                          ? 'border-zinc-700/80 bg-zinc-900/80 hover:border-zinc-500'
                           : isPratik
                           ? 'border-emerald-500/30 bg-emerald-950/15 hover:border-emerald-400'
                           : isSelf
@@ -618,13 +628,15 @@ const ModernCalendarView = ({
                           <span className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono ${
                             isExam
                               ? 'bg-rose-500/20 border border-rose-500/30 text-rose-300'
+                              : isDemo
+                              ? 'bg-zinc-800 border border-zinc-700 text-zinc-300'
                               : isPratik
                               ? 'bg-emerald-500/20 border border-emerald-500/30 text-emerald-300'
                               : isSelf
                               ? 'bg-zinc-800 border border-zinc-700 text-zinc-400'
                               : 'bg-amber-400/10 border border-amber-500/30 text-amber-300'
                           }`}>
-                            {isExam ? 'SINAV' : isPratik ? 'Pratik (U)' : isSelf ? 'Çalışma' : 'Teorik (T)'}
+                            {isExam ? 'SINAV' : isDemo ? 'Demo Tekrarı' : isPratik ? 'Pratik (U)' : isSelf ? 'Çalışma' : 'Teorik (T)'}
                           </span>
 
                           {event.group && event.group !== 'TÜM' && (
@@ -838,12 +850,16 @@ const ModernCalendarView = ({
                   <span className={`px-2 py-0.5 rounded text-xs font-bold font-mono ${
                     selectedEventModal.isExam
                       ? 'bg-rose-500/20 border border-rose-500/40 text-rose-300'
+                      : isDemoEvent(selectedEventModal.title)
+                      ? 'bg-zinc-800 border border-zinc-700 text-zinc-300'
                       : selectedEventModal.type === 'U'
                       ? 'bg-emerald-500/20 border border-emerald-500/40 text-emerald-300'
                       : 'bg-zinc-800 border border-zinc-700 text-zinc-200'
                   }`}>
                     {selectedEventModal.isExam
                       ? 'SINAV'
+                      : isDemoEvent(selectedEventModal.title)
+                      ? 'Demo / Laboratuvar Tekrarı'
                       : selectedEventModal.type === 'U'
                       ? 'Pratik Ders (U)'
                       : 'Teorik Ders (T)'}

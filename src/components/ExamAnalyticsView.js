@@ -590,9 +590,17 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
             {/* Bilgilendirme Notu */}
             <div className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 flex items-start gap-2.5 text-xs text-zinc-400">
               <Info size={15} className="text-amber-400 flex-shrink-0 mt-0.5" />
-              <p>
-                <b className="text-zinc-200">Grup Saati Kuralı:</b> G1 ve G2 için tekrarlanan laboratuvar saatleri öğrencinin net tekil saatine indirgenmiştir. Mesleki Beceri gibi pratik dersleri bağımsız yönetebilirsiniz.
-              </p>
+              <div className="space-y-1">
+                <p>
+                  <b className="text-zinc-200">Demolar / Tekrar Dersleri:</b> Sınav öncesi model ve preparat tekrarı niteliğinde olduğundan soru ve pratik puanı hesabına katılmaz.
+                </p>
+                <p>
+                  <b className="text-zinc-200">Mesleki Beceri:</b> Teorik sınava soru vermez; doğrudan uygulama (pratik) sınavına dahil edilir.
+                </p>
+                <p>
+                  <b className="text-zinc-200">Grup Saati:</b> G1 ve G2 için tekrarlanan laboratuvar seansları tekil öğrenci saatine indirgenmiştir.
+                </p>
+              </div>
             </div>
 
             {/* Ders Tablosu / Listesi */}
@@ -620,8 +628,16 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                             <span>Teorik: <b className="text-zinc-200 font-mono">{dept.netTheoryHours}s</b></span>
                             <span>•</span>
                             <span>Pratik: <b className="text-zinc-200 font-mono">{dept.netPracticeHours}s</b></span>
+                            {dept.demoHours > 0 && (
+                              <>
+                                <span>•</span>
+                                <span className="text-zinc-400 font-mono">
+                                  Demo: <b className="text-zinc-300">{dept.demoHours}s</b> <span className="text-[10px] text-zinc-500">(Tekrar - Sınav Dışı)</span>
+                                </span>
+                              </>
+                            )}
                             {dept.rawPracticeSlots > dept.netPracticeHours && (
-                              <span className="text-[10px] text-zinc-400 bg-zinc-800 px-1.5 py-0.2 rounded">
+                              <span className="text-[10px] text-zinc-400 bg-zinc-800 px-1.5 py-0.2 rounded font-mono">
                                 (G1/G2 tekrarı teke indirildi)
                               </span>
                             )}
@@ -947,17 +963,34 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                 <Layers size={15} />
                 <h4>Pratik Sınav Kaldıraç Etkisi (%{practiceWeight} Sınav Payı)</h4>
               </div>
-              <p className="text-zinc-300 leading-relaxed">
+              <div className="text-zinc-300 leading-relaxed space-y-1.5">
                 {practiceWeight > 0 && strategicInsights.practiceDepts.length > 0 ? (
                   <>
-                    Pratik sınav 100 puan üzerinden <b>%{practiceWeight}</b> ağırlığa sahiptir ve kurul notunuza doğrudan <b>{practiceWeight}.0 net puan</b> etki eder. Özellikle <b>{strategicInsights.practiceDepts.map(p => `${p.name} (${p.practicePoints}p)`).join(', ')}</b> gibi pratik saatleri, teorik sınavdaki yaklaşık <b>~{Math.round((strategicInsights.totalPracticePoints * (practiceWeight / 100)) / (theoryWeight / 100 || 1))} teorik soruya</b> eşdeğer bir not yükseltme kaldıracı sunar.
+                    <p>
+                      Pratik sınav 100 puan üzerinden <b>%{practiceWeight}</b> ağırlığa sahiptir ve kurul notunuza doğrudan <b>{practiceWeight}.0 net puan</b> etki eder. Özellikle <b>{strategicInsights.practiceDepts.map(p => `${p.name} (${p.practicePoints}p)`).join(', ')}</b> gibi pratik saatleri, teorik sınavdaki yaklaşık <b>~{Math.round((strategicInsights.totalPracticePoints * (practiceWeight / 100)) / (theoryWeight / 100 || 1))} teorik soruya</b> eşdeğer bir not yükseltme kaldıracı sunar.
+                    </p>
+                    {strategicInsights.mbDept && (
+                      <p className="text-emerald-300 text-[11px] bg-emerald-950/20 p-2 rounded border border-emerald-500/30">
+                        • <b>Mesleki Beceri:</b> Teorik soru vermemekte, doğrudan uygulama sınavı ({strategicInsights.mbDept.practicePoints}p) üzerinden pratik sınav puanınıza dahil edilmektedir.
+                      </p>
+                    )}
+                    {strategicInsights.totalDemoHours > 0 && (
+                      <p className="text-zinc-400 text-[11px]">
+                        • <b>Demo/Tekrar Dersleri:</b> Kuruldaki toplam {strategicInsights.totalDemoHours} saatlik demo dersleri sınav öncesi pekiştirme niteliğinde olduğundan soru ve sınav puanı hesabının dışında tutulmuştur.
+                      </p>
+                    )}
                   </>
                 ) : (
-                  <>
+                  <p>
                     Bu kurulda pratik sınav bulunmamaktadır. Kurul notunun %100'ü doğrudan teorik sınavdan geleceği için çalışma sürenizin tamamını teorik konu kavrama ve soru çözümüne ayırmalısınız.
-                  </>
+                    {strategicInsights.totalDemoHours > 0 && (
+                      <span className="block mt-1 text-zinc-400 text-[11px]">
+                        (Kuruldaki {strategicInsights.totalDemoHours} saatlik demo oturumları sınav tekrarı niteliğinde olup soru üretmez.)
+                      </span>
+                    )}
+                  </p>
                 )}
-              </p>
+              </div>
             </div>
 
             {/* Kart 3: Kritik Baraj Yönetimi */}

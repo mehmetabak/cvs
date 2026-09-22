@@ -77,6 +77,16 @@ export const extractDepartmentName = (title) => {
 };
 
 /**
+ * Dersin demo / laboratuvar tekrar dersi olup olmadığını tespit eder
+ * Demolar sınav puanı/soru hesabına katılmaz.
+ */
+export const isDemoEvent = (title) => {
+  if (!title) return false;
+  if (/demografi/i.test(title)) return false;
+  return (/^DEMO[:\s]|[\s(]DEMO[:\s]|Tekrar[ıi]?\b/i.test(title));
+};
+
+/**
  * Anabilim dalı için varsayılan sınav dahil olma durumunu belirler
  */
 export const getDefaultExamStatus = (deptName) => {
@@ -91,7 +101,7 @@ export const getDefaultExamStatus = (deptName) => {
     };
   }
 
-  // Mesleki Beceri: Teorik sınava soru vermez, ancak uygulama/pratik sınavına girer!
+  // Mesleki Beceri: Teorik sınava soru vermez, ancak uygulama/pratik sınavına MUTLAKA girer!
   if (lower.includes('mesleki beceri')) {
     return {
       includeInTheory: false,
@@ -113,6 +123,7 @@ export const getDefaultExamStatus = (deptName) => {
 
 /**
  * Ham etkinlikleri analiz ederek anabilim dallarına göre net müfredat saatlerini hesaplar
+ * DEMO / Tekrar dersleri yeni konu içermediğinden sınav puan ve soru hesabından hariç tutulur.
  */
 export const computeDepartmentStats = (events = []) => {
   const depts = {};
@@ -131,6 +142,7 @@ export const computeDepartmentStats = (events = []) => {
         g1Slots: 0,
         g2Slots: 0,
         bothGroupSlots: 0,
+        demoHours: 0,
         // Net saatler
         netTheoryHours: 0,
         netPracticeHours: 0,
@@ -144,14 +156,20 @@ export const computeDepartmentStats = (events = []) => {
     const d = depts[deptName];
     d.totalRawSlots += 1;
 
-    const isPractice = event.type === 'U';
-    if (isPractice) {
-      d.rawPracticeSlots += 1;
-      if (event.group === 'G1') d.g1Slots += 1;
-      else if (event.group === 'G2') d.g2Slots += 1;
-      else d.bothGroupSlots += 1;
+    // Demo ve tekrar dersleri tıp teamüllerine uygun olarak soru ve pratik puanı hesabına katılmaz
+    const isDemo = isDemoEvent(event.title);
+    if (isDemo) {
+      d.demoHours = (d.demoHours || 0) + 1;
     } else {
-      d.rawTheorySlots += 1;
+      const isPractice = event.type === 'U';
+      if (isPractice) {
+        d.rawPracticeSlots += 1;
+        if (event.group === 'G1') d.g1Slots += 1;
+        else if (event.group === 'G2') d.g2Slots += 1;
+        else d.bothGroupSlots += 1;
+      } else {
+        d.rawTheorySlots += 1;
+      }
     }
   });
 
@@ -172,6 +190,17 @@ export const computeDepartmentStats = (events = []) => {
       }
     } else {
       d.netPracticeHours = 0;
+    }
+
+    // Eğer hiç net pratik saati yoksa (veya sadece demo tekrarı varsa) pratik sınav dahilini otomatik kapat
+    if (d.netPracticeHours === 0) {
+      d.includeInPractice = false;
+    }
+
+    // Mesleki Beceri: Teorik sınava soru vermez, ancak net pratik saati varsa MUTLAKA uygulama/pratik sınavına dahildir!
+    if (d.name.toLowerCase().includes('mesleki beceri')) {
+      d.includeInTheory = false;
+      d.includeInPractice = d.netPracticeHours > 0;
     }
 
     d.netTotalHours = d.netTheoryHours + d.netPracticeHours;
@@ -234,6 +263,8 @@ export const calculateExamDistribution = ({
   });
 
   // 5. Her Anabilim Dalı İçin Birleştirilmiş Sonuç & Genel Kurul Notuna Etki
+  const totalDemoHours = departmentList.reduce((sum, d) => sum + (d.demoHours || 0), 0);
+
   const resultDepartments = departmentList.map(dept => {
     const tAlloc = theoryAllocations.find(a => a.name === dept.name);
     const pAlloc = practiceAllocations[dept.name];
@@ -250,6 +281,7 @@ export const calculateExamDistribution = ({
 
     return {
       ...dept,
+      demoHours: dept.demoHours || 0,
       questions,
       questionRatioPercent,
       practicePoints,
@@ -261,6 +293,7 @@ export const calculateExamDistribution = ({
     departments: resultDepartments,
     totalTheoryHours,
     totalPracticeHours,
+    totalDemoHours,
     totalQuestions,
     theoryWeightPercent,
     practiceWeightPercent,
@@ -465,6 +498,7 @@ export const computeStrategicMedicalInsights = (examResult, weeklyWorkload, kuru
   // 4. Pratik Sınav Kaldıraç Etkisi
   const practiceDepts = academicDepts.filter(d => d.includeInPractice && d.practicePoints > 0);
   const totalPracticePoints = practiceDepts.reduce((sum, d) => sum + d.practicePoints, 0);
+  const mbDept = practiceDepts.find(d => d.name.toLowerCase().includes('mesleki beceri'));
 
   // 5. Haftalık Yük Değerlendirmesi
   const peakWeekObj = weeklyWorkload?.weeks?.find(w => w.week === weeklyWorkload?.peakWeek);
@@ -477,6 +511,8 @@ export const computeStrategicMedicalInsights = (examResult, weeklyWorkload, kuru
     yieldRanks,
     practiceDepts,
     totalPracticePoints,
+    mbDept,
+    totalDemoHours: examResult.totalDemoHours || 0,
     peakWeekObj,
     finalWeek,
     totalActiveAcademicHours: examResult.totalTheoryHours + examResult.totalPracticeHours

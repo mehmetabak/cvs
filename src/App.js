@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   Calendar, Upload, BookOpen, 
   CheckCircle2, AlertTriangle, HelpCircle, 
-  GraduationCap, Sparkles, Layers, FileSpreadsheet, FileText, 
+  Sparkles, Layers, FileSpreadsheet, FileText, 
   Bell, ChevronRight, X, Info, Trash2, RefreshCw, BarChart3
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
@@ -325,36 +325,17 @@ const ScheduleToCalendar = () => {
     <div className="min-h-screen bg-[#09090b] text-zinc-100 p-3 sm:p-6 lg:p-10 font-sans selection:bg-amber-400 selection:text-zinc-950">
       <div className="max-w-7xl mx-auto space-y-6">
 
-        {/* --- GOOGLE TAKVİM BİLGİLENDİRME ŞERİDİ --- */}
-        <aside aria-label="Google Takvim Bildirimi" className="p-4 rounded-xl bg-zinc-900 border border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-zinc-800 text-amber-400 border border-zinc-700 flex items-center justify-center flex-shrink-0">
-              <AlertTriangle size={18} />
-            </div>
-            <div className="space-y-0.5">
-              <div className="font-semibold text-zinc-200 text-xs sm:text-sm">
-                Google Takvim'e daha önce ders eklediyseniz:
-              </div>
-              <p className="text-xs text-zinc-400">
-                Tüm kurullar (Kurul 1-4) eksiksiz 8'er saatlik takvim formatına senkronize edildi. Eski kayıtları tek tıkla temizleme rehberi mevcuttur.
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => setShowCleanupModal(true)}
-            className="w-full sm:w-auto px-3.5 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-amber-400 border border-amber-500/30 font-semibold text-xs transition flex items-center justify-center gap-2 flex-shrink-0"
-          >
-            <Trash2 size={14} />
-            <span>Google Takvimi Temizleme Rehberi</span>
-          </button>
-        </aside>
-
         {/* --- ÜST BAŞLIK & REHBER BUTONU --- */}
         <header className="relative flex flex-col md:flex-row items-center justify-between gap-6 border-b border-zinc-800/80 pb-6">
-          <div className="space-y-2 text-center md:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs font-medium">
-              <GraduationCap size={15} className="text-amber-400" />
-              <span>İzmir Bakırçay Üniversitesi • Tıp Fakültesi (2026-2027)</span>
+          <div className="space-y-2.5 text-center md:text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs">
+              <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+              <span className="font-bold text-zinc-100 tracking-wide">İzmir Bakırçay Üniversitesi</span>
+              <span className="text-zinc-600 font-light">•</span>
+              <span className="text-zinc-300 font-medium">Tıp Fakültesi</span>
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-zinc-800 text-amber-400 border border-zinc-700 font-semibold">
+                Dönem 2 / 2026–2027
+              </span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white flex items-center justify-center md:justify-start gap-2.5">
               <span>Ders Programı</span>
