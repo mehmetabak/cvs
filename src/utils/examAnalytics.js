@@ -16,7 +16,7 @@ const NON_EXAM_KEYWORDS = [
   'öğle arası', 'ogle arasi',
   'dekan-öğrenci', 'dekan öğrenci', 'dekan–öğrenci', 'dekan',
   'şenliği', 'senligi', 'öçm', 'ocm', 'özel çalışma modülü',
-  'panel', 'resmi tatil', 'resmî tatil',
+  'resmi tatil', 'resmî tatil',
   'tatil', 'bayram', 'sınav soru tartışması'
 ];
 
@@ -92,7 +92,7 @@ export const isDemoEvent = (title) => {
 export const getDefaultExamStatus = (deptName) => {
   const lower = deptName.toLowerCase();
 
-  // Sınavlar, tatiller, çalışma saatleri, ÖÇM ve paneller sınava soru olarak girmez
+  // Sınavlar, tatiller, çalışma saatleri ve ÖÇM sınava soru olarak girmez
   if (NON_EXAM_KEYWORDS.some(k => lower.includes(k)) || lower === 'sınavlar') {
     return {
       includeInTheory: false,
@@ -106,6 +106,15 @@ export const getDefaultExamStatus = (deptName) => {
     return {
       includeInTheory: false,
       includeInPractice: true,
+      isNonAcademic: false
+    };
+  }
+
+  // Panel dersleri: Entegre tıp ve klinik panelleri varsayılan olarak teorik kurul sınavına dahildir
+  if (lower === 'panel' || lower.includes('panel')) {
+    return {
+      includeInTheory: true,
+      includeInPractice: false,
       isNonAcademic: false
     };
   }
