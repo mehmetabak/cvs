@@ -14,7 +14,9 @@ const NON_EXAM_KEYWORDS = [
   'kurul tanıtım', 'kurul tanitim',
   'danışmanlık', 'danismanlik',
   'öğle arası', 'ogle arasi',
-  'dekan-öğrenci', 'dekan öğrenci', 'şenliği', 'senligi',
+  'dekan-öğrenci', 'dekan öğrenci', 'dekan–öğrenci', 'dekan',
+  'şenliği', 'senligi', 'öçm', 'ocm', 'özel çalışma modülü',
+  'panel', 'resmi tatil', 'resmî tatil',
   'tatil', 'bayram', 'sınav soru tartışması'
 ];
 
@@ -30,7 +32,12 @@ export const extractDepartmentName = (title) => {
     return 'Sınavlar';
   }
 
-  // Özel etkinlikler
+  // Resmi Tatiller ve Bayramlar
+  if (/resm[ıi]\s*tatil|kurban\s*bayram|ramazan\s*bayram|cumhuriyet\s*bayram|çocuk\s*bayram|gençlik\s*ve\s*spor/i.test(clean)) {
+    return 'Resmi Tatil';
+  }
+
+  // Özel etkinlikler & Sınav Dışı Saatler
   if (/ba[gğ][ıi]ms[ıi]z\s*ç/i.test(clean)) return 'Bağımsız Çalışma Saati';
   if (/se[çc]meli\s*ders/i.test(clean)) return 'Seçmeli Ders';
   if (/sosyal\s*sorumluluk/i.test(clean)) return 'Sosyal Sorumluluk ve Proje';
@@ -38,6 +45,10 @@ export const extractDepartmentName = (title) => {
   if (/ubys|öğrenci bilgi/i.test(clean)) return 'UBYS Tanıtımı';
   if (/kurul\s*tan[ıi]t[ıi]m/i.test(clean)) return 'Kurul Tanıtımı';
   if (/mesleki\s*beceri/i.test(clean)) return 'Mesleki Beceri';
+  if (/ö[çc]m\s*şenli[gğ]i|ocm\s*senligi/i.test(clean)) return 'ÖÇM Şenliği';
+  if (/\bö[çc]m\b|\bocm\b|özel\s*çalışma\s*modülü/i.test(clean)) return 'ÖÇM';
+  if (/dekan[–\-\s]*öğrenci/i.test(clean)) return 'Dekan-Öğrenci Buluşması';
+  if (/^panel/i.test(clean)) return 'Panel';
 
   // DEMO ile başlayanlar (Örn: "DEMO: Anatomi Tekrarı" -> "Anatomi")
   let stripped = clean.replace(/^DEMO:\s*/i, '').replace(/^DEMO\s*/i, '');
@@ -71,7 +82,7 @@ export const extractDepartmentName = (title) => {
 export const getDefaultExamStatus = (deptName) => {
   const lower = deptName.toLowerCase();
 
-  // Sınavlar ve çalışma saatleri sınava soru olarak girmez
+  // Sınavlar, tatiller, çalışma saatleri, ÖÇM ve paneller sınava soru olarak girmez
   if (NON_EXAM_KEYWORDS.some(k => lower.includes(k)) || lower === 'sınavlar') {
     return {
       includeInTheory: false,
@@ -90,8 +101,8 @@ export const getDefaultExamStatus = (deptName) => {
   }
 
   // Standart tıp dersleri:
-  // Anatomi, Histoloji pratik sınavına da girer
-  const hasPractice = ['anatomi', 'histoloji', 'fizyoloji', 'mikrobiyoloji', 'patoloji'].some(d => lower.includes(d));
+  // Anatomi, Histoloji, Fizyoloji, Mikrobiyoloji, Patoloji pratik sınavına da girebilir
+  const hasPractice = ['anatomi', 'histoloji', 'fizyoloji', 'mikrobiyoloji', 'patoloji', 'farmakoloji'].some(d => lower.includes(d));
 
   return {
     includeInTheory: true,
@@ -277,4 +288,197 @@ export const DEPARTMENT_COLORS = [
 
 export const getDepartmentColor = (index) => {
   return DEPARTMENT_COLORS[index % DEPARTMENT_COLORS.length];
+};
+
+/**
+ * Müfredattaki net teorik ve pratik ders saati oranından otomatik sınav ağırlığı hesaplar
+ */
+export const calculateAutoWeights = (departmentList = []) => {
+  const activeTheory = departmentList.filter(d => d.includeInTheory);
+  const activePractice = departmentList.filter(d => d.includeInPractice);
+
+  const totalTheory = activeTheory.reduce((sum, d) => sum + (d.netTheoryHours || 0), 0);
+  const totalPractice = activePractice.reduce((sum, d) => sum + (d.netPracticeHours || 0), 0);
+  const totalAcademic = totalTheory + totalPractice;
+
+  if (totalAcademic === 0 || totalPractice === 0) {
+    return {
+      theoryWeight: 100,
+      practiceWeight: 0,
+      totalTheory,
+      totalPractice
+    };
+  }
+
+  const rawTheoryPercent = (totalTheory / totalAcademic) * 100;
+  const theoryWeight = Math.round(rawTheoryPercent);
+  const practiceWeight = 100 - theoryWeight;
+
+  return {
+    theoryWeight,
+    practiceWeight,
+    totalTheory,
+    totalPractice
+  };
+};
+
+/**
+ * Hafta bazında teorik, pratik ve bağımsız çalışma yükünü analiz eder
+ */
+export const computeWeeklyWorkload = (events = []) => {
+  if (!events || events.length === 0) return { weeks: [], peakWeek: null, maxWeeklyHours: 0 };
+
+  const weekMap = {};
+
+  events.forEach(event => {
+    if (!event.week || event.title?.toUpperCase().includes('ÖĞLE ARASI')) return;
+
+    const w = event.week;
+    if (!weekMap[w]) {
+      weekMap[w] = {
+        week: w,
+        theoryCount: 0,
+        practiceSlotsG1: 0,
+        practiceSlotsG2: 0,
+        practiceSlotsAll: 0,
+        selfStudyCount: 0,
+        examCount: 0,
+        otherCount: 0
+      };
+    }
+
+    const item = weekMap[w];
+    if (event.isExam || /^sınav/i.test(event.title)) {
+      item.examCount += 1;
+    } else if (event.isSelfStudy || /ba[gğ][ıi]ms[ıi]z\s*ç/i.test(event.title)) {
+      item.selfStudyCount += 1;
+    } else if (event.type === 'U') {
+      if (event.group === 'G1') item.practiceSlotsG1 += 1;
+      else if (event.group === 'G2') item.practiceSlotsG2 += 1;
+      else item.practiceSlotsAll += 1;
+    } else if (event.type === 'T') {
+      item.theoryCount += 1;
+    } else {
+      item.otherCount += 1;
+    }
+  });
+
+  const weeks = Object.values(weekMap).map(w => {
+    // Net pratik: G1/G2 tekrarı teke indirilir
+    const netPractice = Math.max(w.practiceSlotsG1, w.practiceSlotsG2) + w.practiceSlotsAll;
+    const academicHours = w.theoryCount + netPractice;
+    const totalTrackedHours = academicHours + w.selfStudyCount + w.examCount;
+
+    return {
+      week: w.week,
+      theoryHours: w.theoryCount,
+      practiceHours: netPractice,
+      selfStudyHours: w.selfStudyCount,
+      examHours: w.examCount,
+      academicHours,
+      totalTrackedHours
+    };
+  }).sort((a, b) => a.week - b.week);
+
+  let maxHours = 0;
+  let peakWeek = null;
+  weeks.forEach(w => {
+    if (w.academicHours > maxHours) {
+      maxHours = w.academicHours;
+      peakWeek = w.week;
+    }
+  });
+
+  return {
+    weeks,
+    peakWeek,
+    maxWeeklyHours: maxHours
+  };
+};
+
+/**
+ * Tıp Fakültesi Müfredat Verilerinden Matematiksel Stratejik Analizler Üretir (AI Destekli Analitik Motoru)
+ * - AI Slop içermez; doğrudan resmi ders saatleri, soru sayıları ve tıp fakültesi baraj kurallarına dayanır.
+ */
+export const computeStrategicMedicalInsights = (examResult, weeklyWorkload, kurulName = '') => {
+  if (!examResult || !examResult.departments || examResult.departments.length === 0) return null;
+
+  const academicDepts = examResult.departments
+    .filter(d => (d.includeInTheory && d.questions > 0) || (d.includeInPractice && d.practicePoints > 0))
+    .sort((a, b) => b.totalExamWeightPercent - a.totalExamWeightPercent);
+
+  // 1. Lokomotif Dersler (Kurulun en az %50-%65'ini oluşturan ana omurga)
+  let cumulativeWeight = 0;
+  const corePillars = [];
+  for (const dept of academicDepts) {
+    corePillars.push(dept);
+    cumulativeWeight += dept.totalExamWeightPercent;
+    if (cumulativeWeight >= 55) break;
+  }
+
+  // 2. Baraj Eşiği Analizi (%50 Baraj Kuralı)
+  // Tıp fakültelerinde her anabilim dalından en az %50 doğru yapma kuralı vardır
+  const barajSubjects = academicDepts
+    .filter(d => d.questions >= 4)
+    .map(d => {
+      const barajThreshold = Math.ceil(d.questions * 0.5);
+      return {
+        name: d.name,
+        questions: d.questions,
+        barajThreshold,
+        riskLevel: d.questions >= 25 ? 'Yüksek Risk' : d.questions >= 12 ? 'Orta Risk' : 'Dikkat'
+      };
+    });
+
+  // 3. Çalışma Verimlilik İndeksi (Soru Başına Ders Saati)
+  const yieldRanks = academicDepts
+    .filter(d => d.questions > 0 && d.netTheoryHours > 0)
+    .map(d => {
+      const hoursPerQuestion = Number((d.netTheoryHours / d.questions).toFixed(2));
+      let badge = 'Dengeli';
+      let badgeColor = 'blue';
+
+      if (hoursPerQuestion <= 1.05 && d.practicePoints > 0) {
+        badge = 'Yüksek Getiri (Çifte Etki)';
+        badgeColor = 'emerald';
+      } else if (hoursPerQuestion <= 1.0) {
+        badge = 'Yüksek Soru Verimi';
+        badgeColor = 'cyan';
+      } else if (hoursPerQuestion > 1.25) {
+        badge = 'Yoğun İçerik';
+        badgeColor = 'amber';
+      }
+
+      return {
+        name: d.name,
+        questions: d.questions,
+        netTheoryHours: d.netTheoryHours,
+        netPracticeHours: d.netPracticeHours,
+        practicePoints: d.practicePoints,
+        hoursPerQuestion,
+        badge,
+        badgeColor
+      };
+    })
+    .sort((a, b) => a.hoursPerQuestion - b.hoursPerQuestion);
+
+  // 4. Pratik Sınav Kaldıraç Etkisi
+  const practiceDepts = academicDepts.filter(d => d.includeInPractice && d.practicePoints > 0);
+  const totalPracticePoints = practiceDepts.reduce((sum, d) => sum + d.practicePoints, 0);
+
+  // 5. Haftalık Yük Değerlendirmesi
+  const peakWeekObj = weeklyWorkload?.weeks?.find(w => w.week === weeklyWorkload?.peakWeek);
+  const finalWeek = weeklyWorkload?.weeks?.[weeklyWorkload?.weeks?.length - 1];
+
+  return {
+    corePillars,
+    cumulativeWeight: Number(cumulativeWeight.toFixed(1)),
+    barajSubjects,
+    yieldRanks,
+    practiceDepts,
+    totalPracticePoints,
+    peakWeekObj,
+    finalWeek,
+    totalActiveAcademicHours: examResult.totalTheoryHours + examResult.totalPracticeHours
+  };
 };
