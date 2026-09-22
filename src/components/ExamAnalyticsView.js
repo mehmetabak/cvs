@@ -2,8 +2,8 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { 
   PieChart, Sliders, Calculator, Layers, 
   BookOpen, Target, Settings2, RefreshCw, Info, Check, X, Percent,
-  TrendingUp, Award, Zap, AlertTriangle, ShieldAlert, BarChart2,
-  Calendar, Clock, Bot, Sparkles, CheckCircle2
+  TrendingUp, Award, Zap, ShieldAlert, BarChart2,
+  Calendar, Clock, Bot, Sparkles
 } from 'lucide-react';
 import { 
   computeDepartmentStats, 
@@ -130,17 +130,17 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
 
   if (!examResult || departments.length === 0) {
     return (
-      <div className="glass-panel rounded-2xl p-10 text-center text-slate-400 space-y-3">
-        <BookOpen size={48} className="mx-auto text-slate-500 opacity-40" />
-        <h3 className="text-lg font-bold text-slate-200">Analiz edilecek ders bulunamadı</h3>
-        <p className="text-sm">Lütfen soldaki menüden bir kurul seçin veya ders programı yükleyin.</p>
+      <div className="glass-panel rounded-xl p-10 text-center text-zinc-400 space-y-3">
+        <BookOpen size={44} className="mx-auto text-zinc-600" />
+        <h3 className="text-base font-bold text-zinc-200">Analiz edilecek ders bulunamadı</h3>
+        <p className="text-xs text-zinc-500">Lütfen soldaki menüden bir kurul seçin veya ders programı yükleyin.</p>
       </div>
     );
   }
 
   // Donut Grafiği SVG Hesaplamaları
   const radius = 80;
-  const strokeWidth = 26;
+  const strokeWidth = 24;
   const circumference = 2 * Math.PI * radius;
   let accumulatedOffset = 0;
 
@@ -150,113 +150,113 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
     .sort((a, b) => b.totalExamWeightPercent - a.totalExamWeightPercent);
 
   return (
-    <div className="space-y-8 animate-fade-in pb-12">
+    <div className="space-y-6 animate-fade-in pb-12">
 
       {/* --- ÜST BİLGİ VE ANALİZ BAŞLIĞI --- */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-5 rounded-2xl glass-panel border border-slate-800">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-5 rounded-xl glass-panel">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-indigo-400">
+          <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-amber-400 font-mono">
             <Target size={14} />
-            <span>Tıp Fakültesi Komite / Kurul Analiz Paneli</span>
-            <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] font-bold border border-indigo-500/30 flex items-center gap-1">
+            <span>Komite & Sınav Ağırlık Analizi</span>
+            <span className="px-2 py-0.5 rounded bg-zinc-800 text-amber-400 text-[10px] font-bold border border-zinc-700 flex items-center gap-1">
               <Bot size={11} /> AI Destekli
             </span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-extrabold text-white">
+          <h2 className="text-xl sm:text-2xl font-black text-white">
             {kurulName} — Sınav Soru, Ağırlık & Müfredat Analizi
           </h2>
-          <p className="text-xs sm:text-sm text-slate-400">
-            Resmi ders saatleri ve tıp fakültesi sınav yönetmeliği baz alınarak hesaplanan tam sayı soru dağılımı, pratik puanları ve baraj analizleri.
+          <p className="text-xs sm:text-sm text-zinc-400">
+            Resmi müfredat saatleri ve tıp fakültesi sınav yönetmeliği baz alınarak hesaplanan net soru dağılımı, pratik puanları ve baraj cetveli.
           </p>
         </div>
 
         <button
           onClick={resetToDefaults}
-          className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium transition border border-slate-700 flex-shrink-0"
+          className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white text-xs font-medium transition border border-zinc-700 flex-shrink-0"
         >
-          <RefreshCw size={14} />
+          <RefreshCw size={13} />
           <span>Ayarları Sıfırla</span>
         </button>
       </div>
 
       {/* --- 4 ADET ÖZET METRİK KARTI --- */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        <div className="p-4 rounded-2xl glass-panel border border-slate-800/80 space-y-1">
-          <div className="text-xs text-slate-400 flex items-center justify-between">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="p-4 rounded-xl glass-panel space-y-1">
+          <div className="text-xs text-zinc-400 flex items-center justify-between">
             <span>Toplam Soru</span>
-            <Target size={15} className="text-indigo-400" />
+            <Target size={15} className="text-amber-400" />
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-white">
-            {examResult.totalQuestions} <span className="text-xs font-normal text-slate-400">Soru</span>
+          <div className="text-2xl sm:text-3xl font-black text-white font-mono">
+            {examResult.totalQuestions} <span className="text-xs font-normal text-zinc-500 font-sans">Soru</span>
           </div>
-          <div className="text-[11px] text-slate-400">Kurul Teorik Sınavı</div>
+          <div className="text-[11px] text-zinc-500">Kurul Teorik Sınavı</div>
         </div>
 
-        <div className="p-4 rounded-2xl glass-panel border border-slate-800/80 space-y-1">
-          <div className="text-xs text-slate-400 flex items-center justify-between">
+        <div className="p-4 rounded-xl glass-panel space-y-1">
+          <div className="text-xs text-zinc-400 flex items-center justify-between">
             <span>Net Teorik Yük</span>
-            <BookOpen size={15} className="text-cyan-400" />
+            <BookOpen size={15} className="text-zinc-300" />
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-cyan-300">
-            {examResult.totalTheoryHours} <span className="text-xs font-normal text-slate-400">Saat</span>
+          <div className="text-2xl sm:text-3xl font-black text-zinc-100 font-mono">
+            {examResult.totalTheoryHours} <span className="text-xs font-normal text-zinc-500 font-sans">Saat</span>
           </div>
-          <div className="text-[11px] text-slate-400">Sınava dahil teorik dersler</div>
+          <div className="text-[11px] text-zinc-500">Sınava dahil teorik dersler</div>
         </div>
 
-        <div className="p-4 rounded-2xl glass-panel border border-slate-800/80 space-y-1">
-          <div className="text-xs text-slate-400 flex items-center justify-between">
+        <div className="p-4 rounded-xl glass-panel space-y-1">
+          <div className="text-xs text-zinc-400 flex items-center justify-between">
             <span>Net Pratik Yük</span>
             <Layers size={15} className="text-emerald-400" />
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-emerald-300">
-            {examResult.totalPracticeHours} <span className="text-xs font-normal text-slate-400">Saat</span>
+          <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-mono">
+            {examResult.totalPracticeHours} <span className="text-xs font-normal text-zinc-500 font-sans">Saat</span>
           </div>
-          <div className="text-[11px] text-slate-400">Öğrenci başına net lab/beceri</div>
+          <div className="text-[11px] text-zinc-500">Öğrenci başına net lab/beceri</div>
         </div>
 
-        <div className="p-4 rounded-2xl glass-panel border border-slate-800/80 space-y-1">
-          <div className="text-xs text-slate-400 flex items-center justify-between">
+        <div className="p-4 rounded-xl glass-panel space-y-1">
+          <div className="text-xs text-zinc-400 flex items-center justify-between">
             <span>Sınav Ağırlığı</span>
             <Percent size={15} className="text-amber-400" />
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-amber-300 flex items-center gap-1.5">
+          <div className="text-2xl sm:text-3xl font-black text-amber-400 font-mono flex items-center gap-1.5">
             <span>%{theoryWeight} / %{practiceWeight}</span>
             {isAutoWeight && (
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold uppercase">
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-400/10 text-amber-400 border border-amber-500/30 font-bold uppercase font-mono">
                 Oto
               </span>
             )}
           </div>
-          <div className="text-[11px] text-slate-400">
+          <div className="text-[11px] text-zinc-500">
             {isAutoWeight ? '⚡ Ders saati oranından otomatik' : `Teorik %${theoryWeight} • Pratik %${practiceWeight}`}
           </div>
         </div>
       </div>
 
       {/* --- ORTA BÖLÜM: 2 SÜTUNLU GRAFİK & AYAR PANELİ --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
 
         {/* SOL SÜTUN: DONUT GRAFİĞİ, AYARLAR VE SİMÜLATÖR (5 KOLON) */}
-        <div className="lg:col-span-5 space-y-6">
+        <div className="lg:col-span-5 space-y-5">
           
           {/* SVG Soru Dağılım Halkası */}
-          <div className="p-5 sm:p-6 rounded-2xl glass-panel border border-slate-800 space-y-4">
+          <div className="p-5 rounded-xl glass-panel space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-white text-base flex items-center gap-2">
-                <PieChart size={18} className="text-indigo-400" />
+              <h3 className="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+                <PieChart size={16} className="text-amber-400" />
                 <span>Teorik Soru Sayısı Dağılımı ({examResult.totalQuestions} Soru)</span>
               </h3>
             </div>
 
             <div className="relative flex flex-col items-center justify-center pt-2">
-              <svg width="220" height="220" viewBox="0 0 220 220" className="transform -rotate-90">
+              <svg width="210" height="210" viewBox="0 0 210 210" className="transform -rotate-90">
                 {/* Arka plan çemberi */}
                 <circle
-                  cx="110"
-                  cy="110"
+                  cx="105"
+                  cy="105"
                   r={radius}
                   fill="transparent"
-                  stroke="#1e293b"
+                  stroke="#27272a"
                   strokeWidth={strokeWidth}
                 />
                 {/* Dilimler */}
@@ -271,16 +271,16 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                   return (
                     <circle
                       key={d.name}
-                      cx="110"
-                      cy="110"
+                      cx="105"
+                      cy="105"
                       r={radius}
                       fill="transparent"
                       stroke={color}
-                      strokeWidth={isHovered ? strokeWidth + 6 : strokeWidth}
+                      strokeWidth={isHovered ? strokeWidth + 4 : strokeWidth}
                       strokeDasharray={strokeDasharray}
                       strokeDashoffset={strokeDashoffset}
                       strokeLinecap="butt"
-                      className="cursor-pointer transition-all duration-200"
+                      className="cursor-pointer transition-all duration-150"
                       onMouseEnter={() => setHoveredDept(d.name)}
                       onMouseLeave={() => setHoveredDept(null)}
                     />
@@ -294,27 +294,27 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                   (() => {
                     const d = activeTheoryDepts.find(item => item.name === hoveredDept);
                     return (
-                      <div className="space-y-0.5 px-4 animate-fade-in">
-                        <div className="text-xs text-slate-300 font-semibold truncate max-w-[120px]">{d?.name}</div>
-                        <div className="text-2xl font-black text-white">{d?.questions} <span className="text-xs text-indigo-400">Soru</span></div>
-                        <div className="text-[10px] text-slate-400">%{d?.questionRatioPercent}</div>
+                      <div className="space-y-0.5 px-3 animate-fade-in">
+                        <div className="text-xs text-zinc-300 font-semibold truncate max-w-[120px]">{d?.name}</div>
+                        <div className="text-2xl font-black text-white font-mono">{d?.questions} <span className="text-xs text-amber-400">Soru</span></div>
+                        <div className="text-[10px] text-zinc-400 font-mono">%{d?.questionRatioPercent}</div>
                       </div>
                     );
                   })()
                 ) : (
                   <div className="space-y-0.5 text-center">
-                    <span className="text-xs text-slate-400 uppercase font-bold tracking-wider">Toplam</span>
-                    <div className="text-3xl font-black text-white">{examResult.totalQuestions}</div>
-                    <span className="text-[11px] text-indigo-300 font-medium">Soru</span>
+                    <span className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">Toplam</span>
+                    <div className="text-3xl font-black text-white font-mono">{examResult.totalQuestions}</div>
+                    <span className="text-[11px] text-amber-400 font-medium">Soru</span>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Renk Lejantı (Etkileşimli) */}
-            <div className="space-y-2 pt-2 border-t border-slate-800">
-              <div className="text-xs font-semibold text-slate-400 mb-1">Ders Başına Soru Payları:</div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-44 overflow-y-auto pr-1">
+            <div className="space-y-2 pt-2 border-t border-zinc-800">
+              <div className="text-xs font-semibold text-zinc-400 mb-1">Ders Başına Soru Payları:</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-44 overflow-y-auto pr-1">
                 {activeTheoryDepts.map((d, idx) => {
                   const color = getDepartmentColor(idx);
                   const isHovered = hoveredDept === d.name;
@@ -323,10 +323,10 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                       key={d.name}
                       onMouseEnter={() => setHoveredDept(d.name)}
                       onMouseLeave={() => setHoveredDept(null)}
-                      className={`p-2 rounded-xl border transition-all cursor-pointer flex items-center justify-between text-xs ${
+                      className={`p-2 rounded-lg border transition-all cursor-pointer flex items-center justify-between text-xs ${
                         isHovered 
-                          ? 'bg-slate-800 border-indigo-500 text-white shadow' 
-                          : 'bg-slate-900/60 border-slate-800 text-slate-300 hover:bg-slate-800/80'
+                          ? 'bg-zinc-800 border-amber-400 text-white' 
+                          : 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:border-zinc-700'
                       }`}
                     >
                       <div className="flex items-center gap-2 truncate">
@@ -344,28 +344,28 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
           </div>
 
           {/* Sınav Parametreleri & Otomatik Ağırlık Ayar Kartı */}
-          <div className="p-5 rounded-2xl glass-panel border border-slate-800 space-y-4">
-            <h3 className="font-bold text-white text-base flex items-center gap-2">
-              <Settings2 size={18} className="text-indigo-400" />
+          <div className="p-5 rounded-xl glass-panel space-y-4">
+            <h3 className="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+              <Settings2 size={16} className="text-amber-400" />
               <span>Sınav Ağırlık Ayarları</span>
             </h3>
 
             <div className="space-y-4 text-xs">
               {/* Toplam Soru Sayısı */}
               <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-slate-300">
+                <div className="flex items-center justify-between text-zinc-300">
                   <span>Toplam Teorik Soru Sayısı:</span>
                   <span className="font-bold text-white font-mono">{totalQuestions} Soru</span>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-1.5">
                   {[100, 120, 80].map(cnt => (
                     <button
                       key={cnt}
                       onClick={() => setTotalQuestions(cnt)}
                       className={`py-1.5 rounded-lg border font-semibold transition ${
                         totalQuestions === cnt
-                          ? 'bg-indigo-600 text-white border-indigo-500 shadow-sm'
-                          : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+                          ? 'bg-amber-400 text-zinc-950 font-bold border-amber-400'
+                          : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800'
                       }`}
                     >
                       {cnt} Soru
@@ -375,23 +375,23 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
               </div>
 
               {/* Teorik / Pratik Ağırlık Dağılımı ve Otomatik Mod */}
-              <div className="space-y-2 pt-2 border-t border-slate-800">
-                <div className="flex items-center justify-between text-slate-300">
+              <div className="space-y-2 pt-2 border-t border-zinc-800">
+                <div className="flex items-center justify-between text-zinc-300">
                   <span>Kurul Notu Sınav Ağırlığı:</span>
-                  <span className="font-bold text-indigo-300 font-mono">
+                  <span className="font-bold text-amber-400 font-mono">
                     Teorik %{theoryWeight} • Pratik %{practiceWeight}
                   </span>
                 </div>
 
                 {/* Görsel Dağılım Çubuğu */}
-                <div className="w-full bg-slate-800 rounded-full h-3 overflow-hidden flex">
+                <div className="w-full bg-zinc-800 rounded-full h-2.5 overflow-hidden flex">
                   <div 
-                    className="bg-indigo-500 h-full transition-all duration-300"
+                    className="bg-amber-400 h-full transition-all duration-200"
                     style={{ width: `${theoryWeight}%` }}
                     title={`Teorik: %${theoryWeight}`}
                   />
                   <div 
-                    className="bg-emerald-500 h-full transition-all duration-300"
+                    className="bg-emerald-500 h-full transition-all duration-200"
                     style={{ width: `${practiceWeight}%` }}
                     title={`Pratik: %${practiceWeight}`}
                   />
@@ -402,23 +402,23 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                   {/* Öne Çıkan Otomatik Hesapla Butonu */}
                   <button
                     onClick={enableAutoWeightMode}
-                    className={`w-full py-2.5 px-3 rounded-xl border font-bold transition flex items-center justify-between text-xs ${
+                    className={`w-full py-2.5 px-3 rounded-lg border font-bold transition flex items-center justify-between text-xs ${
                       isAutoWeight
-                        ? 'bg-gradient-to-r from-indigo-600 to-emerald-600 text-white border-indigo-400 shadow-lg shadow-indigo-950/60'
-                        : 'bg-slate-800/90 text-slate-200 border-slate-700 hover:border-indigo-500/60 hover:bg-slate-800'
+                        ? 'bg-zinc-800 text-amber-400 border-amber-400'
+                        : 'bg-zinc-900 text-zinc-200 border-zinc-800 hover:border-zinc-700'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <Zap size={15} className={isAutoWeight ? 'text-amber-300 animate-pulse' : 'text-indigo-400'} />
+                      <Zap size={14} className={isAutoWeight ? 'text-amber-400' : 'text-zinc-500'} />
                       <span>⚡ Otomatik Hesapla (Müfredat Oranı)</span>
                     </div>
-                    <span className="font-mono bg-black/30 px-2 py-0.5 rounded text-[11px]">
+                    <span className="font-mono bg-zinc-950 px-2 py-0.5 rounded text-[11px] text-zinc-300 border border-zinc-800">
                       %{autoWeights?.theoryWeight} / %{autoWeights?.practiceWeight}
                     </span>
                   </button>
 
                   {/* Manuel Ön Ayarlar */}
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-3 gap-1.5">
                     {[
                       { t: 80, p: 20, label: '%80 / %20' },
                       { t: 85, p: 15, label: '%85 / %15' },
@@ -431,8 +431,8 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                           onClick={() => selectManualWeight(preset.t, preset.p)}
                           className={`py-1.5 rounded-lg border font-semibold transition text-[11px] ${
                             isSelected
-                              ? 'bg-indigo-600 text-white border-indigo-500'
-                              : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+                              ? 'bg-amber-400 text-zinc-950 font-bold border-amber-400'
+                              : 'bg-zinc-900 text-zinc-300 border-zinc-800 hover:bg-zinc-800'
                           }`}
                         >
                           {preset.label}
@@ -442,8 +442,8 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                   </div>
 
                   {isAutoWeight && (
-                    <div className="p-2.5 rounded-xl bg-indigo-950/40 border border-indigo-500/30 text-[11px] text-indigo-300 flex items-start gap-2">
-                      <Sparkles size={14} className="text-amber-400 flex-shrink-0 mt-0.5" />
+                    <div className="p-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px] text-zinc-300 flex items-start gap-2">
+                      <Sparkles size={13} className="text-amber-400 flex-shrink-0 mt-0.5" />
                       <span>
                         <b>Otomatik Oran Aktif:</b> Sınava dahil {autoWeights.totalTheory} saat teorik ve {autoWeights.totalPractice} saat pratik dersinden oranlandı (%{autoWeights.theoryWeight} T / %{autoWeights.practiceWeight} P).
                       </span>
@@ -455,17 +455,17 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
           </div>
 
           {/* İnteraktif Tıp Not Simülatörü */}
-          <div className="p-5 rounded-2xl glass-panel border border-slate-800 space-y-4">
-            <h3 className="font-bold text-white text-base flex items-center gap-2">
-              <Calculator size={18} className="text-indigo-400" />
+          <div className="p-5 rounded-xl glass-panel space-y-4">
+            <h3 className="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+              <Calculator size={16} className="text-amber-400" />
               <span>Tahmini Not Simülatörü</span>
             </h3>
 
             <div className="space-y-3 text-xs">
               <div className="space-y-1">
-                <div className="flex justify-between text-slate-300">
+                <div className="flex justify-between text-zinc-300">
                   <span>Tahmini Teorik Sınav Puanı (100 üzerinden):</span>
-                  <span className="font-bold text-cyan-400 font-mono">{simTheoryScore}</span>
+                  <span className="font-bold text-amber-400 font-mono">{simTheoryScore}</span>
                 </div>
                 <input
                   type="range"
@@ -473,13 +473,13 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                   max="100"
                   value={simTheoryScore}
                   onChange={(e) => setSimTheoryScore(Number(e.target.value))}
-                  className="w-full accent-cyan-500 cursor-pointer"
+                  className="w-full accent-amber-400 cursor-pointer"
                 />
               </div>
 
               {practiceWeight > 0 && (
                 <div className="space-y-1">
-                  <div className="flex justify-between text-slate-300">
+                  <div className="flex justify-between text-zinc-300">
                     <span>Tahmini Pratik Sınav Puanı (100 üzerinden):</span>
                     <span className="font-bold text-emerald-400 font-mono">{simPracticeScore}</span>
                   </div>
@@ -494,16 +494,18 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                 </div>
               )}
 
-              <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-between">
+              <div className="p-3 rounded-lg bg-zinc-950 border border-zinc-800 flex items-center justify-between">
                 <div>
-                  <div className="text-xs text-slate-400">Hesaplanan Toplam Kurul Notu:</div>
-                  <div className={`text-2xl font-black ${simulatedTotalGrade >= 60 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                    {simulatedTotalGrade} <span className="text-xs font-medium text-slate-400">/ 100</span>
+                  <div className="text-xs text-zinc-400">Hesaplanan Toplam Kurul Notu:</div>
+                  <div className={`text-2xl font-black font-mono ${simulatedTotalGrade >= 60 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {simulatedTotalGrade} <span className="text-xs font-medium text-zinc-500">/ 100</span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                    simulatedTotalGrade >= 60 ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                  <span className={`px-2.5 py-1 rounded-md text-xs font-bold font-mono ${
+                    simulatedTotalGrade >= 60 
+                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
+                      : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
                   }`}>
                     {simulatedTotalGrade >= 60 ? 'Geçer Düzey' : 'Baraj / Kritik'}
                   </span>
@@ -515,19 +517,19 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
         </div>
 
         {/* SAĞ SÜTUN: ETKİ GRAFİĞİ VE DERS KONTROLLERİ (7 KOLON) */}
-        <div className="lg:col-span-7 space-y-6">
+        <div className="lg:col-span-7 space-y-5">
 
-          {/* YENİ GRAFİK: DERSLERİN TOPLAM KURUL NOTUNA ETKİ SIRALAMASI */}
-          <div className="p-5 sm:p-6 rounded-2xl glass-panel border border-slate-800 space-y-4">
+          {/* DERSLERİN TOPLAM KURUL NOTUNA ETKİ SIRALAMASI */}
+          <div className="p-5 rounded-xl glass-panel space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-white text-base flex items-center gap-2">
-                <BarChart2 size={18} className="text-indigo-400" />
+              <h3 className="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+                <BarChart2 size={16} className="text-amber-400" />
                 <span>Derslerin Kurul Notuna Toplam Etki Sıralaması</span>
               </h3>
-              <span className="text-xs text-slate-400">100 Puan Üzerinden Net Etki</span>
+              <span className="text-xs text-zinc-500 font-mono">100 Puan Üzerinden</span>
             </div>
 
-            <div className="space-y-3 pt-1">
+            <div className="space-y-2 pt-1">
               {sortedAcademicDepts.map((dept, idx) => {
                 const color = getDepartmentColor(idx);
                 const isHovered = hoveredDept === dept.name;
@@ -537,8 +539,8 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                     key={dept.name}
                     onMouseEnter={() => setHoveredDept(dept.name)}
                     onMouseLeave={() => setHoveredDept(null)}
-                    className={`p-3 rounded-xl border transition-all ${
-                      isHovered ? 'bg-slate-800/90 border-indigo-500' : 'bg-slate-900/60 border-slate-800/80'
+                    className={`p-3 rounded-lg border transition-all ${
+                      isHovered ? 'bg-zinc-800 border-amber-400' : 'bg-zinc-900 border-zinc-800 hover:border-zinc-700'
                     }`}
                   >
                     <div className="flex items-center justify-between text-xs mb-1.5">
@@ -546,10 +548,10 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                         <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
                         <span className="font-bold text-white text-sm">{dept.name}</span>
                         {dept.questions > 0 && (
-                          <span className="text-[11px] text-indigo-300 font-mono">({dept.questions} Soru)</span>
+                          <span className="text-[11px] text-zinc-400 font-mono">({dept.questions} Soru)</span>
                         )}
                         {dept.practicePoints > 0 && (
-                          <span className="text-[11px] text-emerald-300 font-mono">({dept.practicePoints}p Pratik)</span>
+                          <span className="text-[11px] text-emerald-400 font-mono">({dept.practicePoints}p Pratik)</span>
                         )}
                       </div>
                       <span className="font-black text-white text-sm font-mono">
@@ -558,9 +560,9 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                     </div>
 
                     {/* Yatay İlerleme Çubuğu */}
-                    <div className="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden flex">
+                    <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden flex">
                       <div
-                        className="h-full rounded-full transition-all duration-300"
+                        className="h-full rounded-full transition-all duration-200"
                         style={{
                           width: `${Math.min(dept.totalExamWeightPercent, 100)}%`,
                           backgroundColor: color
@@ -574,27 +576,27 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
           </div>
 
           {/* DERS BAZINDA SINAV DAHİL ETME LİSTESİ */}
-          <div className="p-5 sm:p-6 rounded-2xl glass-panel border border-slate-800 space-y-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-2 border-b border-slate-800">
-              <h3 className="font-bold text-white text-base flex items-center gap-2">
-                <Sliders size={18} className="text-indigo-400" />
+          <div className="p-5 rounded-xl glass-panel space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 pb-2 border-b border-zinc-800">
+              <h3 className="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+                <Sliders size={16} className="text-amber-400" />
                 <span>Ders Bazında Sınav Filtreleri & Müfredat Saatleri</span>
               </h3>
-              <span className="text-xs text-slate-400">
-                Sınava soru vermeyen dersleri tek tıkla devre dışı bırakabilirsiniz
+              <span className="text-xs text-zinc-500">
+                Sınava soru vermeyen dersleri devre dışı bırakabilirsiniz
               </span>
             </div>
 
             {/* Bilgilendirme Notu */}
-            <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800 flex items-start gap-2.5 text-xs text-slate-300">
-              <Info size={16} className="text-indigo-400 flex-shrink-0 mt-0.5" />
+            <div className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 flex items-start gap-2.5 text-xs text-zinc-400">
+              <Info size={15} className="text-amber-400 flex-shrink-0 mt-0.5" />
               <p>
-                <b>Grup Saati Kuralı:</b> G1 ve G2 için aynı içerikle tekrarlanan laboratuvar saatleri bir öğrencinin aldığı tekil saate (net saate) indirgenmiştir. Mesleki Beceri gibi pratik dersleri sadece uygulama sınavına etki edecek şekilde bağımsız yönetebilirsiniz.
+                <b className="text-zinc-200">Grup Saati Kuralı:</b> G1 ve G2 için tekrarlanan laboratuvar saatleri öğrencinin net tekil saatine indirgenmiştir. Mesleki Beceri gibi pratik dersleri bağımsız yönetebilirsiniz.
               </p>
             </div>
 
             {/* Ders Tablosu / Listesi */}
-            <div className="space-y-3 max-h-[38rem] overflow-y-auto pr-1">
+            <div className="space-y-2.5 max-h-[38rem] overflow-y-auto pr-1">
               {examResult.departments.map((dept, idx) => {
                 const color = getDepartmentColor(idx);
                 const isExamActive = dept.includeInTheory || dept.includeInPractice;
@@ -602,24 +604,24 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                 return (
                   <div
                     key={dept.name}
-                    className={`p-3.5 rounded-xl border transition-all duration-200 glass-card space-y-3 ${
+                    className={`p-3.5 rounded-lg border transition-all glass-card space-y-2.5 ${
                       !isExamActive 
-                        ? 'opacity-55 bg-slate-900/40 border-slate-800/60' 
-                        : 'border-slate-800 hover:border-indigo-500/40'
+                        ? 'opacity-50 bg-zinc-950 border-zinc-800' 
+                        : 'border-zinc-800 hover:border-zinc-700'
                     }`}
                   >
                     {/* Üst Satır: İsim, Net Saatler ve Toplam Ağırlık */}
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                       <div className="flex items-center gap-2.5">
-                        <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
+                        <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: color }} />
                         <div>
-                          <h4 className="font-bold text-sm sm:text-base text-white">{dept.name}</h4>
-                          <div className="text-[11px] text-slate-400 flex items-center gap-2 flex-wrap">
-                            <span>Teorik: <b className="text-slate-200">{dept.netTheoryHours} Saat</b></span>
+                          <h4 className="font-bold text-sm text-white">{dept.name}</h4>
+                          <div className="text-[11px] text-zinc-400 flex items-center gap-2 flex-wrap">
+                            <span>Teorik: <b className="text-zinc-200 font-mono">{dept.netTheoryHours}s</b></span>
                             <span>•</span>
-                            <span>Pratik: <b className="text-slate-200">{dept.netPracticeHours} Saat</b></span>
+                            <span>Pratik: <b className="text-zinc-200 font-mono">{dept.netPracticeHours}s</b></span>
                             {dept.rawPracticeSlots > dept.netPracticeHours && (
-                              <span className="text-[10px] text-indigo-300 bg-indigo-950/60 px-1.5 py-0.5 rounded">
+                              <span className="text-[10px] text-zinc-400 bg-zinc-800 px-1.5 py-0.2 rounded">
                                 (G1/G2 tekrarı teke indirildi)
                               </span>
                             )}
@@ -629,54 +631,54 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
 
                       <div className="flex items-center gap-2">
                         {dept.includeInTheory && dept.questions > 0 && (
-                          <div className="px-3 py-1 rounded-xl bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-xs font-black font-mono">
+                          <div className="px-2.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 text-amber-400 text-xs font-bold font-mono">
                             {dept.questions} Soru
                           </div>
                         )}
-                        <div className="px-2.5 py-1 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold font-mono">
+                        <div className="px-2.5 py-0.5 rounded bg-zinc-900 text-zinc-300 text-xs font-bold font-mono border border-zinc-800">
                           %{dept.totalExamWeightPercent} Not Etkisi
                         </div>
                       </div>
                     </div>
 
                     {/* Alt Kontroller: Sınava Dahil Etme Anahtarları */}
-                    <div className="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-slate-800/70 text-xs">
-                      <div className="flex items-center gap-2.5">
+                    <div className="flex items-center justify-between flex-wrap gap-2 pt-2 border-t border-zinc-800 text-xs">
+                      <div className="flex items-center gap-2">
                         {/* Teorik Sınav Toggle */}
                         <button
                           onClick={() => toggleTheoryExam(dept.name)}
-                          className={`px-2.5 py-1.5 rounded-lg border font-semibold transition flex items-center gap-1.5 ${
+                          className={`px-2.5 py-1 rounded-md border font-semibold transition flex items-center gap-1.5 text-[11px] ${
                             dept.includeInTheory
-                              ? 'bg-cyan-950/60 border-cyan-500/40 text-cyan-300'
-                              : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-300'
+                              ? 'bg-zinc-800 border-zinc-700 text-zinc-200 hover:border-zinc-600'
+                              : 'bg-zinc-950 border-zinc-800 text-zinc-600 hover:text-zinc-500'
                           }`}
                         >
-                          {dept.includeInTheory ? <Check size={13} className="text-cyan-400" /> : <X size={13} />}
-                          <span>Teorik Sınav: {dept.includeInTheory ? 'Dahil' : 'Hariç'}</span>
+                          {dept.includeInTheory ? <Check size={12} className="text-amber-400" /> : <X size={12} />}
+                          <span>Teorik: {dept.includeInTheory ? 'Dahil' : 'Hariç'}</span>
                         </button>
 
                         {/* Pratik Sınav Toggle */}
                         {dept.netPracticeHours > 0 && (
                           <button
                             onClick={() => togglePracticeExam(dept.name)}
-                            className={`px-2.5 py-1.5 rounded-lg border font-semibold transition flex items-center gap-1.5 ${
+                            className={`px-2.5 py-1 rounded-md border font-semibold transition flex items-center gap-1.5 text-[11px] ${
                               dept.includeInPractice
-                                ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300'
-                                : 'bg-slate-800/60 border-slate-700 text-slate-400 hover:text-slate-300'
+                                ? 'bg-zinc-800 border-zinc-700 text-emerald-300 hover:border-zinc-600'
+                                : 'bg-zinc-950 border-zinc-800 text-zinc-600 hover:text-zinc-500'
                             }`}
                           >
-                            {dept.includeInPractice ? <Check size={13} className="text-emerald-400" /> : <X size={13} />}
-                            <span>Pratik Sınav: {dept.includeInPractice ? 'Dahil' : 'Hariç'}</span>
+                            {dept.includeInPractice ? <Check size={12} className="text-emerald-400" /> : <X size={12} />}
+                            <span>Pratik: {dept.includeInPractice ? 'Dahil' : 'Hariç'}</span>
                           </button>
                         )}
                       </div>
 
-                      <div className="text-[11px] text-slate-400 font-mono">
+                      <div className="text-[11px] text-zinc-500 font-mono">
                         {dept.includeInTheory && (
-                          <span>Soru Payı: <b>%{dept.questionRatioPercent}</b></span>
+                          <span>Soru Payı: <b className="text-zinc-300">%{dept.questionRatioPercent}</b></span>
                         )}
                         {dept.includeInPractice && dept.netPracticeHours > 0 && (
-                          <span className="ml-2">• Pratik: <b>{dept.practicePoints}p</b></span>
+                          <span className="ml-2">• Pratik: <b className="text-emerald-400">{dept.practicePoints}p</b></span>
                         )}
                       </div>
                     </div>
@@ -690,29 +692,29 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
 
       </div>
 
-      {/* --- YENİ BÖLÜM 1: HAFTALIK DERS VE ÇALIŞMA YÜKÜ ZAMAN ÇİZELGESİ --- */}
+      {/* --- HAFTALIK DERS VE ÇALIŞMA YÜKÜ ZAMAN ÇİZELGESİ --- */}
       {weeklyWorkload && weeklyWorkload.weeks.length > 0 && (
-        <div className="p-5 sm:p-6 rounded-2xl glass-panel border border-slate-800 space-y-5">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+        <div className="p-5 rounded-xl glass-panel space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800">
             <div>
-              <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-indigo-400">
-                <Calendar size={14} />
+              <div className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-amber-400 font-mono">
+                <Calendar size={13} />
                 <span>Haftalık Yük Dağılımı</span>
               </div>
-              <h3 className="text-lg font-bold text-white">
+              <h3 className="text-base font-bold text-white">
                 Haftalık Müfredat & Çalışma Yükü Grafiği
               </h3>
             </div>
             {weeklyWorkload.peakWeek && (
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-bold">
-                <TrendingUp size={14} />
-                <span>Zirve Hafta: {weeklyWorkload.peakWeek}. Hafta ({weeklyWorkload.maxWeeklyHours} Saat Ders)</span>
+              <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-amber-400 text-xs font-bold font-mono">
+                <TrendingUp size={13} />
+                <span>Zirve: {weeklyWorkload.peakWeek}. Hafta ({weeklyWorkload.maxWeeklyHours}s Ders)</span>
               </div>
             )}
           </div>
 
           {/* Haftalık Bar Grafiği */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 pt-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 pt-1">
             {weeklyWorkload.weeks.map(w => {
               const isPeak = w.week === weeklyWorkload.peakWeek;
               const maxScale = Math.max(weeklyWorkload.maxWeeklyHours, 40);
@@ -723,25 +725,25 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
               return (
                 <div 
                   key={w.week}
-                  className={`p-3 rounded-xl border flex flex-col justify-between transition-all ${
+                  className={`p-3 rounded-lg border flex flex-col justify-between transition-all ${
                     isPeak 
-                      ? 'bg-indigo-950/30 border-indigo-500/60 shadow-lg shadow-indigo-950/40' 
-                      : 'bg-slate-900/60 border-slate-800 hover:border-slate-700'
+                      ? 'bg-zinc-850 border-amber-400/50' 
+                      : 'bg-zinc-900 border-zinc-800 hover:border-zinc-700'
                   }`}
                 >
                   <div className="flex items-center justify-between text-xs mb-2">
-                    <span className="font-extrabold text-white">{w.week}. Hafta</span>
+                    <span className="font-bold text-white">{w.week}. Hafta</span>
                     {isPeak && (
-                      <span className="text-[10px] px-1 rounded bg-rose-500/20 text-rose-300 font-bold">Zirve</span>
+                      <span className="text-[10px] px-1 rounded bg-amber-400/10 text-amber-400 font-bold font-mono">Zirve</span>
                     )}
                   </div>
 
                   {/* Sütun Çubuğu */}
-                  <div className="h-32 bg-slate-950/70 rounded-lg p-1 flex flex-col-reverse gap-1 border border-slate-800/80">
+                  <div className="h-28 bg-zinc-950 rounded p-1 flex flex-col-reverse gap-1 border border-zinc-800">
                     {/* Bağımsız Çalışma */}
                     {studyHeight > 0 && (
                       <div 
-                        className="bg-slate-600/80 rounded transition-all duration-300"
+                        className="bg-zinc-600 rounded transition-all duration-200"
                         style={{ height: `${studyHeight}%` }}
                         title={`Bağımsız Çalışma: ${w.selfStudyHours} Saat`}
                       />
@@ -749,7 +751,7 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                     {/* Pratik */}
                     {practiceHeight > 0 && (
                       <div 
-                        className="bg-emerald-500 rounded transition-all duration-300"
+                        className="bg-emerald-500 rounded transition-all duration-200"
                         style={{ height: `${practiceHeight}%` }}
                         title={`Pratik / Lab: ${w.practiceHours} Saat`}
                       />
@@ -757,7 +759,7 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                     {/* Teorik */}
                     {theoryHeight > 0 && (
                       <div 
-                        className="bg-indigo-500 rounded transition-all duration-300"
+                        className="bg-amber-400 rounded transition-all duration-200"
                         style={{ height: `${theoryHeight}%` }}
                         title={`Teorik Ders: ${w.theoryHours} Saat`}
                       />
@@ -765,14 +767,14 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
                   </div>
 
                   {/* Alt Bilgi */}
-                  <div className="mt-2.5 pt-2 border-t border-slate-800 text-[11px] text-slate-300 space-y-0.5">
+                  <div className="mt-2 pt-2 border-t border-zinc-800 text-[11px] text-zinc-300 space-y-0.5">
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Aktif Ders:</span>
-                      <span className="font-bold text-white">{w.academicHours}s</span>
+                      <span className="text-zinc-500">Ders:</span>
+                      <span className="font-bold text-white font-mono">{w.academicHours}s</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-slate-400">Çalışma:</span>
-                      <span className="font-mono text-slate-400">{w.selfStudyHours}s</span>
+                      <span className="text-zinc-500">Çalışma:</span>
+                      <span className="font-mono text-zinc-400">{w.selfStudyHours}s</span>
                     </div>
                   </div>
                 </div>
@@ -781,68 +783,68 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
           </div>
 
           {/* Lejant */}
-          <div className="flex items-center justify-center gap-6 pt-2 text-xs text-slate-400 flex-wrap">
+          <div className="flex items-center justify-center gap-6 pt-1 text-xs text-zinc-400 flex-wrap">
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded bg-indigo-500" />
+              <span className="w-2.5 h-2.5 rounded bg-amber-400" />
               <span>Teorik Dersler</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded bg-emerald-500" />
+              <span className="w-2.5 h-2.5 rounded bg-emerald-500" />
               <span>Pratik / Laboratuvar</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded bg-slate-600" />
+              <span className="w-2.5 h-2.5 rounded bg-zinc-600" />
               <span>Bağımsız Çalışma Saati</span>
             </div>
           </div>
         </div>
       )}
 
-      {/* --- YENİ BÖLÜM 2: 2 KOLONLU BARAJ EŞİK CETVELİ VE ÇALIŞMA VERİMLİLİĞİ (ROI) --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* --- BARAJ EŞİK CETVELİ VE ÇALIŞMA VERİMLİLİĞİ (ROI) --- */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
 
         {/* BARAJ ANALİZİ: TIP FAKÜLTESİ %50 BARAJ KURALI */}
-        <div className="p-5 sm:p-6 rounded-2xl glass-panel border border-slate-800 space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div className="p-5 rounded-xl glass-panel space-y-3.5">
+          <div className="flex items-center justify-between pb-2 border-b border-zinc-800">
             <div className="flex items-center gap-2">
-              <ShieldAlert size={18} className="text-amber-400" />
-              <h3 className="font-bold text-white text-base">Tıp Fakültesi %50 Baraj Eşik Cetveli</h3>
+              <ShieldAlert size={16} className="text-amber-400" />
+              <h3 className="font-bold text-white text-sm sm:text-base">Tıp Fakültesi %50 Baraj Eşik Cetveli</h3>
             </div>
-            <span className="text-[11px] text-amber-300 bg-amber-950/60 border border-amber-800/40 px-2 py-0.5 rounded-full font-bold">
-              Kritik Sınav Kuralı
+            <span className="text-[11px] text-amber-400 bg-zinc-800 border border-zinc-700 px-2 py-0.5 rounded font-mono font-bold">
+              Yönetmelik Kuralı
             </span>
           </div>
 
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Tıp fakültesi sınav yönetmeliği gereğince, her anabilim dalından toplam soru sayısının en az %50'si kadar doğru yapılması zorunludur. Barajın altında kalınan her eksik doğru için genel toplam netinizden <b>puan kesintisi</b> uygulanır.
+          <p className="text-xs text-zinc-400 leading-relaxed">
+            Tıp fakültesi sınav yönetmeliği gereğince, her anabilim dalından soru sayısının en az %50'si kadar doğru yapılması zorunludur. Barajın altında kalınan her eksik doğru için genel toplam netinizden <b>kesinti</b> yapılır.
           </p>
 
-          <div className="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+          <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
             {strategicInsights?.barajSubjects.map(sub => (
               <div 
                 key={sub.name}
-                className="p-3 rounded-xl bg-slate-900/70 border border-slate-800 flex items-center justify-between gap-3 text-xs"
+                className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-between gap-3 text-xs"
               >
                 <div className="space-y-0.5">
                   <div className="font-bold text-white">{sub.name}</div>
-                  <div className="text-[11px] text-slate-400">
-                    Toplam Soru: <b className="text-slate-200">{sub.questions} Soru</b>
+                  <div className="text-[11px] text-zinc-400">
+                    Toplam Soru: <b className="text-zinc-200 font-mono">{sub.questions} Soru</b>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <div className="text-right">
-                    <div className="text-[10px] text-slate-400">Geçer Eşik:</div>
-                    <div className="font-black text-amber-300 text-sm font-mono">
+                    <div className="text-[10px] text-zinc-500">Geçer Eşik:</div>
+                    <div className="font-black text-amber-400 text-sm font-mono">
                       ≥ {sub.barajThreshold} Doğru
                     </div>
                   </div>
-                  <span className={`px-2 py-1 rounded-lg text-[10px] font-bold ${
+                  <span className={`px-2 py-1 rounded text-[10px] font-bold font-mono ${
                     sub.riskLevel === 'Yüksek Risk'
-                      ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                      ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
                       : sub.riskLevel === 'Orta Risk'
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                        : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                        ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                        : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
                   }`}>
                     {sub.riskLevel}
                   </span>
@@ -853,48 +855,48 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
         </div>
 
         {/* ÇALIŞMA VERİMLİLİĞİ: DERS SAATİ / SORU GETİRİSİ (YIELD INDEX) */}
-        <div className="p-5 sm:p-6 rounded-2xl glass-panel border border-slate-800 space-y-4">
-          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div className="p-5 rounded-xl glass-panel space-y-3.5">
+          <div className="flex items-center justify-between pb-2 border-b border-zinc-800">
             <div className="flex items-center gap-2">
-              <Award size={18} className="text-cyan-400" />
-              <h3 className="font-bold text-white text-base">Soru Başına Ders Saati & Çalışma Getirisi</h3>
+              <Award size={16} className="text-amber-400" />
+              <h3 className="font-bold text-white text-sm sm:text-base">Soru Başına Ders Saati & Çalışma Getirisi</h3>
             </div>
-            <span className="text-[11px] text-cyan-300 bg-cyan-950/60 border border-cyan-800/40 px-2 py-0.5 rounded-full font-bold">
+            <span className="text-[11px] text-zinc-300 bg-zinc-800 border border-zinc-700 px-2 py-0.5 rounded font-mono font-bold">
               Verim İndeksi
             </span>
           </div>
 
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Hangi dersin kaç saatlik müfredatından 1 soru çıktığını ve pratik puan katkısını gösterir. Düşük saat/soru oranı ve pratik puanı içeren dersler çalışma süreniz için en yüksek puan getirisini sunar.
+          <p className="text-xs text-zinc-400 leading-relaxed">
+            Hangi dersin kaç saatlik müfredatından 1 soru çıktığını ve pratik katkısını gösterir. Düşük saat/soru oranı ve pratik puanı içeren dersler çalışma süreniz için en yüksek puan getirisini sunar.
           </p>
 
-          <div className="space-y-2.5 max-h-80 overflow-y-auto pr-1">
+          <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
             {strategicInsights?.yieldRanks.map(item => (
               <div 
                 key={item.name}
-                className="p-3 rounded-xl bg-slate-900/70 border border-slate-800 flex items-center justify-between gap-3 text-xs"
+                className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-between gap-3 text-xs"
               >
                 <div className="space-y-0.5">
                   <div className="font-bold text-white">{item.name}</div>
-                  <div className="text-[11px] text-slate-400">
-                    {item.netTheoryHours} saat teorik → {item.questions} soru
-                    {item.practicePoints > 0 && <span className="text-emerald-400 ml-1.5 font-semibold">+{item.practicePoints}p Pratik</span>}
+                  <div className="text-[11px] text-zinc-400">
+                    <span className="font-mono">{item.netTheoryHours}s</span> teorik → <span className="font-mono">{item.questions}</span> soru
+                    {item.practicePoints > 0 && <span className="text-emerald-400 ml-1.5 font-semibold font-mono">+{item.practicePoints}p Pratik</span>}
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <div className="text-right">
-                    <div className="text-[10px] text-slate-400">1 Soru Başına:</div>
-                    <div className="font-black text-cyan-300 text-sm font-mono">
-                      {item.hoursPerQuestion} Saat
+                    <div className="text-[10px] text-zinc-500">1 Soru Başına:</div>
+                    <div className="font-black text-zinc-100 text-sm font-mono">
+                      {item.hoursPerQuestion}s
                     </div>
                   </div>
-                  <span className={`px-2 py-1 rounded-lg text-[10px] font-bold ${
+                  <span className={`px-2 py-1 rounded text-[10px] font-bold font-mono ${
                     item.badgeColor === 'emerald'
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                       : item.badgeColor === 'cyan'
-                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30'
-                        : 'bg-slate-800 text-slate-300 border border-slate-700'
+                        ? 'bg-amber-400/10 text-amber-400 border border-amber-500/20'
+                        : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
                   }`}>
                     {item.badge}
                   </span>
@@ -906,52 +908,46 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
 
       </div>
 
-      {/* --- YENİ BÖLÜM 3: YAPAY ZEKÂ DESTEKLİ KURUL DEĞERLENDİRMESİ & STRATEJİK ÖNERİLER (NO AI SLOP) --- */}
+      {/* --- YAPAY ZEKÂ DESTEKLİ KURUL DEĞERLENDİRMESİ & STRATEJİK ÖNERİLER (SADE & SOMUT) --- */}
       {strategicInsights && (
-        <div className="p-6 rounded-2xl glass-panel border border-indigo-500/30 space-y-6 relative overflow-hidden shadow-2xl">
-          {/* Arka plan ışık efekti */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
-
+        <div className="p-5 sm:p-6 rounded-xl glass-panel space-y-4">
           {/* AI Başlık ve Şeffaf Doğrulama Bilgisi */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-800">
             <div className="space-y-1">
-              <div className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-indigo-400">
-                <Bot size={16} />
-                <span>Yapay Zekâ Destekli Kurul Analizi</span>
-                <span className="px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-[10px] border border-indigo-500/40">
-                  Müfredat Verisi Tabanlı
-                </span>
+              <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-amber-400 font-mono">
+                <Bot size={15} />
+                <span>🤖 Yapay Zekâ Destekli Kurul Analizi (Müfredat Verisi Tabanlı)</span>
               </div>
-              <h3 className="text-lg sm:text-xl font-extrabold text-white">
+              <h3 className="text-base sm:text-lg font-bold text-white">
                 {kurulName} — Stratejik Sınav & Çalışma Değerlendirmesi
               </h3>
             </div>
-            <div className="text-left sm:text-right text-[11px] text-slate-400 max-w-xs">
+            <div className="text-left sm:text-right text-[11px] text-zinc-500 max-w-xs">
               Bu analizler; ders saati oranları, soru payları ve komite baraj kuralı algoritmaları kullanılarak yapay zekâ tarafından oluşturulmuştur.
             </div>
           </div>
 
           {/* 4 Adet Somut Strateji Kartı */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
 
             {/* Kart 1: Ana Omurga ve Lokomotif Dersler */}
-            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
-              <div className="flex items-center gap-2 text-indigo-400 font-bold text-sm">
-                <Target size={16} />
+            <div className="p-4 rounded-lg bg-zinc-950 border border-zinc-800 space-y-2">
+              <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
+                <Target size={15} />
                 <h4>Kurulun Ana Omurgası (%{strategicInsights.cumulativeWeight} Ağırlık)</h4>
               </div>
-              <p className="text-slate-300 leading-relaxed">
-                Bu kurulun kaderini <b>{strategicInsights.corePillars.map(p => `${p.name} (%${p.totalExamWeightPercent})`).join(' ve ')}</b> anabilim dalları belirlemektedir. Bu dersler tek başına sınav notunun <b>%{strategicInsights.cumulativeWeight}</b>'lik bölümünü oluşturur. Bu iki derste sağlam temel atmadan kuruldan geçer not almak matematiksel olarak mümkün değildir.
+              <p className="text-zinc-300 leading-relaxed">
+                Bu kurulun kaderini <b>{strategicInsights.corePillars.map(p => `${p.name} (%${p.totalExamWeightPercent})`).join(' ve ')}</b> anabilim dalları belirlemektedir. Bu dersler tek başına sınav notunun <b>%{strategicInsights.cumulativeWeight}</b>'lik bölümünü oluşturur. Bu derslerde sağlam temel atmadan kuruldan geçer not almak matematiksel olarak mümkün değildir.
               </p>
             </div>
 
             {/* Kart 2: Pratik Sınavının Kaldıraç Etkisi */}
-            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+            <div className="p-4 rounded-lg bg-zinc-950 border border-zinc-800 space-y-2">
               <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
-                <Layers size={16} />
+                <Layers size={15} />
                 <h4>Pratik Sınav Kaldıraç Etkisi (%{practiceWeight} Sınav Payı)</h4>
               </div>
-              <p className="text-slate-300 leading-relaxed">
+              <p className="text-zinc-300 leading-relaxed">
                 {practiceWeight > 0 && strategicInsights.practiceDepts.length > 0 ? (
                   <>
                     Pratik sınav 100 puan üzerinden <b>%{practiceWeight}</b> ağırlığa sahiptir ve kurul notunuza doğrudan <b>{practiceWeight}.0 net puan</b> etki eder. Özellikle <b>{strategicInsights.practiceDepts.map(p => `${p.name} (${p.practicePoints}p)`).join(', ')}</b> gibi pratik saatleri, teorik sınavdaki yaklaşık <b>~{Math.round((strategicInsights.totalPracticePoints * (practiceWeight / 100)) / (theoryWeight / 100 || 1))} teorik soruya</b> eşdeğer bir not yükseltme kaldıracı sunar.
@@ -965,23 +961,23 @@ const ExamAnalyticsView = ({ events = [], kurulName = 'Kurul Programı' }) => {
             </div>
 
             {/* Kart 3: Kritik Baraj Yönetimi */}
-            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+            <div className="p-4 rounded-lg bg-zinc-950 border border-zinc-800 space-y-2">
               <div className="flex items-center gap-2 text-amber-400 font-bold text-sm">
-                <ShieldAlert size={16} />
+                <ShieldAlert size={15} />
                 <h4>Kritik Baraj Yönetimi & Risk Önleme</h4>
               </div>
-              <p className="text-slate-300 leading-relaxed">
+              <p className="text-zinc-300 leading-relaxed">
                 Kurulda soru sayısı en yüksek olan <b>{strategicInsights.barajSubjects.slice(0, 2).map(b => `${b.name} (${b.questions} soru / ${b.barajThreshold} baraj)`).join(' ve ')}</b> dersleri en yüksek baraj riski taşır. Baraj sınırının altında kalınan her soru genel notunuzdan düşeceğinden, soru sayısı çok olan derslerde seçici konu atlamaktan kaçınılmalıdır.
               </p>
             </div>
 
             {/* Kart 4: Haftalık Yük ve Çalışma Zamanlaması */}
-            <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
-              <div className="flex items-center gap-2 text-cyan-400 font-bold text-sm">
-                <Clock size={16} />
+            <div className="p-4 rounded-lg bg-zinc-950 border border-zinc-800 space-y-2">
+              <div className="flex items-center gap-2 text-zinc-300 font-bold text-sm">
+                <Clock size={15} />
                 <h4>Müfredat Zamanlaması & Tekrar Stratejisi</h4>
               </div>
-              <p className="text-slate-300 leading-relaxed">
+              <p className="text-zinc-300 leading-relaxed">
                 {strategicInsights.peakWeekObj ? (
                   <>
                     Ders yükü <b>{strategicInsights.peakWeekObj.week}. haftada</b> zirveye ulaşmaktadır ({strategicInsights.peakWeekObj.academicHours} saat aktif ders). Kurulun ilk haftalarında teorik temel inşa edilirken; son haftalarda artan bağımsız çalışma saatleri ve demo tekrarları soru çözümü ve çıkmış sorular için en elverişli zaman penceresidir.

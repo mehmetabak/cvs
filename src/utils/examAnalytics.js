@@ -269,21 +269,21 @@ export const calculateExamDistribution = ({
 };
 
 /**
- * Grafik Renk Paleti (Şık, göz yormayan profesyonel tıp analitik renkleri)
+ * Grafik Renk Paleti (Sade, modern gri-siyah-sarı temalı tıp analitik renkleri)
  */
 export const DEPARTMENT_COLORS = [
-  '#6366f1', // Indigo (Anatomi vb.)
-  '#06b6d4', // Cyan (Fizyoloji)
-  '#10b981', // Emerald (Histoloji)
-  '#f59e0b', // Amber (Biyokimya)
-  '#f43f5e', // Rose (Biyofizik)
-  '#8b5cf6', // Violet (Mikrobiyoloji)
-  '#ec4899', // Pink (Patoloji)
-  '#14b8a6', // Teal (Farmakoloji)
-  '#3b82f6', // Blue (Biyoistatistik)
-  '#d97706', // Warm Amber (Halk Sağlığı)
-  '#a855f7', // Purple (Mesleki Beceri)
-  '#64748b'  // Slate (Diğer)
+  '#f59e0b', // Amber / Sarı (Birincil ders)
+  '#d97706', // Koyu Kehribar / Bronz
+  '#eab308', // Parlak Altın Sarısı
+  '#a1a1aa', // Platin Gri
+  '#fbbf24', // Açık Sarı
+  '#71717a', // Çelik Gri
+  '#ca8a04', // Antik Altın
+  '#e4e4e7', // Gümüş Açık Gri
+  '#b45309', // Koyu Pirinç / Hardal
+  '#52525b', // Füme Gri
+  '#fde047', // Açık Saman Sarısı
+  '#3f3f46'  // Koyu Kurşuni
 ];
 
 export const getDepartmentColor = (index) => {

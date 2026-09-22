@@ -322,46 +322,46 @@ const ScheduleToCalendar = () => {
   }, [rawEvents]);
 
   return (
-    <div className="min-h-screen bg-[#090d16] text-slate-100 p-3 sm:p-6 lg:p-10 font-sans selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-[#09090b] text-zinc-100 p-3 sm:p-6 lg:p-10 font-sans selection:bg-amber-400 selection:text-zinc-950">
       <div className="max-w-7xl mx-auto space-y-6">
 
-        {/* --- GOOGLE TAKVİM UYARI & DÜZELTME BİLGİLENDİRME ŞERİDİ --- */}
-        <aside aria-label="Google Takvim Bildirimi" className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+        {/* --- GOOGLE TAKVİM BİLGİLENDİRME ŞERİDİ --- */}
+        <aside aria-label="Google Takvim Bildirimi" className="p-4 rounded-xl bg-zinc-900 border border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center flex-shrink-0">
-              <AlertTriangle size={22} />
+            <div className="w-9 h-9 rounded-lg bg-zinc-800 text-amber-400 border border-zinc-700 flex items-center justify-center flex-shrink-0">
+              <AlertTriangle size={18} />
             </div>
             <div className="space-y-0.5">
-              <div className="font-semibold text-amber-300 text-sm sm:text-base">
-                Daha önce Google Takvim'e eksik program eklediyseniz:
+              <div className="font-semibold text-zinc-200 text-xs sm:text-sm">
+                Google Takvim'e daha önce ders eklediyseniz:
               </div>
-              <p className="text-xs text-slate-300">
-                Tüm dersler (360 ders) eksiksiz olarak güncellendi. Eski eklenenleri nasıl sileceğinizi veya iptal edeceğinizi öğrenmek için tıklayın.
+              <p className="text-xs text-zinc-400">
+                Tüm kurullar (Kurul 1-4) eksiksiz 8'er saatlik takvim formatına senkronize edildi. Eski kayıtları tek tıkla temizleme rehberi mevcuttur.
               </p>
             </div>
           </div>
           <button
             onClick={() => setShowCleanupModal(true)}
-            className="w-full sm:w-auto px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 flex-shrink-0 shadow"
+            className="w-full sm:w-auto px-3.5 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-amber-400 border border-amber-500/30 font-semibold text-xs transition flex items-center justify-center gap-2 flex-shrink-0"
           >
-            <Trash2 size={16} />
+            <Trash2 size={14} />
             <span>Google Takvimi Temizleme Rehberi</span>
           </button>
         </aside>
 
         {/* --- ÜST BAŞLIK & REHBER BUTONU --- */}
-        <header className="relative flex flex-col md:flex-row items-center justify-between gap-6 border-b border-slate-800/80 pb-6">
+        <header className="relative flex flex-col md:flex-row items-center justify-between gap-6 border-b border-zinc-800/80 pb-6">
           <div className="space-y-2 text-center md:text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs sm:text-sm font-medium">
-              <GraduationCap size={16} className="text-indigo-400" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs font-medium">
+              <GraduationCap size={15} className="text-amber-400" />
               <span>İzmir Bakırçay Üniversitesi • Tıp Fakültesi (2026-2027)</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white flex items-center justify-center md:justify-start gap-3">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white flex items-center justify-center md:justify-start gap-2.5">
               <span>Ders Programı</span>
-              <span className="text-indigo-400 font-light">→</span>
-              <span className="bg-gradient-to-r from-indigo-400 via-indigo-300 to-sky-400 bg-clip-text text-transparent">Eksiksiz Takvim (.ics)</span>
+              <span className="text-zinc-600 font-light">/</span>
+              <span className="text-amber-400">Eksiksiz Takvim (.ics)</span>
             </h1>
-            <p className="text-slate-400 text-sm sm:text-base max-w-2xl">
+            <p className="text-zinc-400 text-xs sm:text-sm max-w-2xl">
               10:15, 13:30 ve 16:30 dahil tüm ders saatleri, sınavlar ve pratikler %100 eksiksiz aktarılır.
             </p>
           </div>
@@ -369,9 +369,9 @@ const ScheduleToCalendar = () => {
           <div className="flex items-center gap-2.5">
             <button
               onClick={() => setShowHelpModal(true)}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/70 text-slate-300 hover:text-white text-sm font-medium transition shadow-sm hover:border-slate-600"
+              className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 hover:text-white text-xs font-semibold transition"
             >
-              <HelpCircle size={18} className="text-indigo-400" />
+              <HelpCircle size={15} className="text-amber-400" />
               <span>Takvime Nasıl Eklenir?</span>
             </button>
           </div>
@@ -379,84 +379,84 @@ const ScheduleToCalendar = () => {
 
         {/* --- ANA BÖLÜM / GÖRÜNÜM SEÇİMİ (TAKVİM & SINAV ANALİZİ) --- */}
         <div className="flex items-center justify-center">
-          <div className="inline-flex p-1.5 bg-slate-900/90 rounded-2xl border border-slate-800 shadow-xl max-w-md w-full">
+          <div className="inline-flex p-1 bg-zinc-900 rounded-xl border border-zinc-800 max-w-md w-full">
             <button
               onClick={() => setActiveView('calendar')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 sm:px-4 rounded-lg text-xs sm:text-sm font-bold transition-all ${
                 activeView === 'calendar'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-950/60'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-amber-400 text-zinc-950 shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              <Calendar size={16} />
+              <Calendar size={15} />
               <span>Program & Takvim</span>
             </button>
             <button
               onClick={() => setActiveView('analytics')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 sm:px-4 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 sm:px-4 rounded-lg text-xs sm:text-sm font-bold transition-all ${
                 activeView === 'analytics'
-                  ? 'bg-indigo-600 text-white shadow-md shadow-indigo-950/60'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-amber-400 text-zinc-950 shadow-sm'
+                  : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
-              <BarChart3 size={16} />
+              <BarChart3 size={15} />
               <span>Sınav & Ders Oran Analizi</span>
             </button>
           </div>
         </div>
 
         {/* --- MOD SEÇİM SEKMELERİ (3 MOD) --- */}
-        <nav aria-label="Program Kaynağı Seçimi" className="flex flex-wrap gap-2 p-1.5 bg-slate-900/90 rounded-2xl border border-slate-800/80 max-w-2xl mx-auto shadow-inner">
+        <nav aria-label="Program Kaynağı Seçimi" className="flex flex-wrap gap-2 p-1 bg-zinc-900 rounded-xl border border-zinc-800 max-w-2xl mx-auto">
           <button
             onClick={() => { setActiveMode('preset'); setError(''); }}
-            className={`flex-1 min-w-[170px] flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold tab-transition ${
+            className={`flex-1 min-w-[160px] flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-lg text-xs sm:text-sm font-semibold tab-transition ${
               activeMode === 'preset'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/40'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                ? 'bg-zinc-800 text-amber-400 border border-amber-500/40 shadow-sm'
+                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850'
             }`}
           >
-            <Sparkles size={16} className={activeMode === 'preset' ? 'text-white' : 'text-indigo-400'} />
+            <Sparkles size={15} className={activeMode === 'preset' ? 'text-amber-400' : 'text-zinc-500'} />
             <span>2026-2027 Kurulları</span>
-            <span className="px-1.5 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-indigo-500/30 text-indigo-200">Tam</span>
+            <span className="px-1.5 py-0.2 text-[10px] font-mono uppercase font-bold rounded bg-zinc-700/80 text-zinc-300">Tam</span>
           </button>
 
           <button
             onClick={() => { setActiveMode('pdf'); setError(''); }}
-            className={`flex-1 min-w-[150px] flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold tab-transition ${
+            className={`flex-1 min-w-[140px] flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-lg text-xs sm:text-sm font-semibold tab-transition ${
               activeMode === 'pdf'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/40'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                ? 'bg-zinc-800 text-amber-400 border border-amber-500/40 shadow-sm'
+                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850'
             }`}
           >
-            <FileText size={16} className={activeMode === 'pdf' ? 'text-white' : 'text-indigo-400'} />
+            <FileText size={15} className={activeMode === 'pdf' ? 'text-amber-400' : 'text-zinc-500'} />
             <span>PDF Yükle</span>
-            <span className="px-1.5 py-0.5 text-[10px] uppercase font-bold tracking-wider rounded bg-indigo-500/30 text-indigo-200">Yeni</span>
+            <span className="px-1.5 py-0.2 text-[10px] font-mono uppercase font-bold rounded bg-zinc-700/80 text-zinc-300">Yeni</span>
           </button>
 
           <button
             onClick={() => { setActiveMode('excel'); setError(''); }}
-            className={`flex-1 min-w-[150px] flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold tab-transition ${
+            className={`flex-1 min-w-[140px] flex items-center justify-center gap-2 py-2.5 px-3.5 rounded-lg text-xs sm:text-sm font-semibold tab-transition ${
               activeMode === 'excel'
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/40'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                ? 'bg-zinc-800 text-amber-400 border border-amber-500/40 shadow-sm'
+                : 'text-zinc-400 hover:text-zinc-200 hover:bg-zinc-850'
             }`}
           >
-            <FileSpreadsheet size={16} className={activeMode === 'excel' ? 'text-white' : 'text-indigo-400'} />
+            <FileSpreadsheet size={15} className={activeMode === 'excel' ? 'text-amber-400' : 'text-zinc-500'} />
             <span>Excel (.xlsx)</span>
           </button>
         </nav>
 
         {/* --- KURUL HIZLI SEÇİMİ (ANALİTİK MODUNDA DA ERİŞİLEBİLİR) --- */}
         {activeView === 'analytics' && activeMode === 'preset' && (
-          <div className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto p-2 rounded-2xl bg-slate-900/60 border border-slate-800">
+          <div className="flex flex-wrap items-center justify-center gap-2 max-w-4xl mx-auto p-1.5 rounded-xl bg-zinc-900 border border-zinc-800">
             {BAKIRCAY_KURULLAR_2026_2027.map(k => (
               <button
                 key={k.id}
                 onClick={() => setSelectedPresetId(k.id)}
-                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition border ${
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition border ${
                   selectedPresetId === k.id
-                    ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-950/50'
-                    : 'bg-slate-800/80 text-slate-300 border-slate-700 hover:bg-slate-700'
+                    ? 'bg-amber-400 text-zinc-950 border-amber-400 font-bold shadow-sm'
+                    : 'bg-zinc-800/80 text-zinc-400 border-zinc-700/80 hover:bg-zinc-800 hover:text-zinc-200'
                 }`}
               >
                 {k.shortName}
@@ -467,20 +467,20 @@ const ScheduleToCalendar = () => {
 
         {/* --- GÖRÜNÜM İÇERİĞİ: TAKVİM VEYA SINAV ANALİZİ --- */}
         {activeView === 'calendar' ? (
-        <main className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <main className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
           {/* === SOL SÜTUN: KONTROL VE AYARLAR (5 KOLON) === */}
-          <div className="lg:col-span-5 space-y-6">
+          <div className="lg:col-span-5 space-y-5">
 
             {/* ADIM 1: PROGRAM / DOSYA SEÇİMİ */}
-            <div className="glass-panel rounded-2xl p-5 sm:p-6 space-y-5">
+            <div className="glass-panel rounded-xl p-5 space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold text-white flex items-center gap-2.5">
-                  <div className="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm font-bold">1</div>
+                <h2 className="text-base font-bold text-white flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-md bg-zinc-800 text-amber-400 border border-zinc-700 flex items-center justify-center text-xs font-bold">1</div>
                   <span>{activeMode === 'preset' ? 'Kurul Seçimi' : activeMode === 'pdf' ? 'PDF Programı Seç' : 'Excel Dosyası Seç'}</span>
                 </h2>
                 {activeMode === 'preset' && (
-                  <span className="text-xs text-indigo-300 font-medium bg-indigo-950/70 border border-indigo-800/60 px-2.5 py-1 rounded-full">
+                  <span className="text-xs text-zinc-300 font-medium bg-zinc-800 border border-zinc-700 px-2 py-0.5 rounded-md font-mono">
                     Dönem 2
                   </span>
                 )}
@@ -488,43 +488,43 @@ const ScheduleToCalendar = () => {
 
               {/* MOD 1: HAZIR KURULLAR */}
               {activeMode === 'preset' && (
-                <div className="space-y-2.5">
+                <div className="space-y-2">
                   {BAKIRCAY_KURULLAR_2026_2027.map(kurul => {
                     const isSelected = selectedPresetId === kurul.id;
                     return (
                       <button
                         key={kurul.id}
                         onClick={() => setSelectedPresetId(kurul.id)}
-                        className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-center justify-between gap-3 ${
+                        className={`w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between gap-3 ${
                           isSelected
-                            ? 'bg-indigo-600/20 border-indigo-500 shadow-md shadow-indigo-950/50 text-white'
-                            : 'bg-slate-800/50 border-slate-700/60 text-slate-300 hover:bg-slate-800 hover:border-slate-600'
+                            ? 'bg-zinc-900 border-amber-500/60 shadow-sm text-white'
+                            : 'bg-zinc-900/40 border-zinc-800 text-zinc-300 hover:bg-zinc-800/60 hover:border-zinc-700'
                         }`}
                       >
-                        <div className="space-y-1">
-                          <div className="font-semibold text-sm sm:text-base flex items-center gap-2">
+                        <div className="space-y-0.5">
+                          <div className="font-semibold text-xs sm:text-sm flex items-center gap-2">
                             <span>{kurul.shortName}</span>
-                            {isSelected && <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse"></span>}
+                            {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>}
                           </div>
-                          <div className="text-xs text-slate-400 flex items-center gap-2 flex-wrap">
+                          <div className="text-[11px] text-zinc-400 flex items-center gap-2 flex-wrap">
                             <span>📅 {kurul.startDate} – {kurul.endDate}</span>
                             <span>•</span>
-                            <span className="text-emerald-400 font-medium">{kurul.eventCount} Ders Saati</span>
+                            <span className="text-amber-400 font-mono font-medium">{kurul.eventCount} Ders</span>
                           </div>
                         </div>
-                        <ChevronRight size={18} className={isSelected ? 'text-indigo-400' : 'text-slate-600'} />
+                        <ChevronRight size={16} className={isSelected ? 'text-amber-400' : 'text-zinc-600'} />
                       </button>
                     );
                   })}
 
                   {currentPresetMeta && (
-                    <div className="mt-4 p-3 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 space-y-1.5">
-                      <div className="flex items-center gap-1.5 text-slate-300 font-medium">
-                        <Info size={14} className="text-indigo-400" />
+                    <div className="mt-3 p-3 rounded-lg bg-zinc-900/60 border border-zinc-800 text-xs text-zinc-400 space-y-1">
+                      <div className="flex items-center gap-1.5 text-zinc-300 font-medium">
+                        <Info size={13} className="text-amber-400" />
                         <span>Resmi Fakülte Programı:</span>
                       </div>
-                      <p className="text-slate-200">{currentPresetMeta.name}</p>
-                      <p className="text-[11px] text-slate-400">Başlama: {currentPresetMeta.startDate} • Bitiş: {currentPresetMeta.endDate}</p>
+                      <p className="text-zinc-200">{currentPresetMeta.name}</p>
+                      <p className="text-[11px] text-zinc-500 font-mono">Tarih: {currentPresetMeta.startDate} – {currentPresetMeta.endDate}</p>
                     </div>
                   )}
                 </div>
@@ -543,42 +543,42 @@ const ScheduleToCalendar = () => {
                     />
                     <label
                       htmlFor="schedule-upload"
-                      className="w-full text-center cursor-pointer bg-slate-800/60 text-slate-300 border-2 border-dashed border-slate-700 rounded-xl p-5 hover:bg-slate-800 hover:border-indigo-500 transition-all flex flex-col items-center justify-center gap-2"
+                      className="w-full text-center cursor-pointer bg-zinc-900/40 text-zinc-300 border border-dashed border-zinc-800 rounded-xl p-5 hover:bg-zinc-800/60 hover:border-amber-500/50 transition-all flex flex-col items-center justify-center gap-2"
                     >
-                      <Upload size={28} className="text-indigo-400" />
-                      <span className="font-medium text-sm">
+                      <Upload size={24} className="text-amber-400" />
+                      <span className="font-medium text-xs sm:text-sm">
                         {uploadedFile ? `✅ ${uploadedFile.name}` : activeMode === 'pdf' ? 'Ders programı PDF dosyasını seçin' : 'Excel (.xlsx) dosyasını seçin'}
                       </span>
-                      <span className="text-xs text-slate-400">Tıklayın veya dosyayı buraya bırakın</span>
+                      <span className="text-[11px] text-zinc-500">Tıklayın veya dosyayı buraya bırakın</span>
                     </label>
 
                     <button
                       onClick={processUploadedFile}
                       disabled={loading || !uploadedFile}
-                      className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-950 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-semibold py-3 px-5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-indigo-950/40"
+                      className="w-full bg-amber-400 hover:bg-amber-300 disabled:bg-zinc-800 disabled:text-zinc-600 disabled:cursor-not-allowed text-zinc-950 font-bold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-sm text-xs sm:text-sm"
                     >
                       {loading ? (
-                        <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/20 border-b-white"></div>
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-zinc-950/20 border-b-zinc-950"></div>
                       ) : (
-                        <BookOpen size={18} />
+                        <BookOpen size={16} />
                       )}
-                      <span>{loading ? 'Eksiksiz Ayrıştırılıyor...' : 'Programı Ayrıştır ve Yükle'}</span>
+                      <span>{loading ? 'Ayrıştırılıyor...' : 'Programı Ayrıştır ve Yükle'}</span>
                     </button>
                   </div>
 
                   {/* Excel Sayfa Seçimi */}
                   {activeMode === 'excel' && excelSheets.length > 0 && (
-                    <div className="space-y-2 pt-3 border-t border-slate-800">
-                      <label className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Kurul / Sayfa Seçimi:</label>
-                      <div className="flex flex-wrap gap-2">
+                    <div className="space-y-2 pt-3 border-t border-zinc-800">
+                      <label className="text-[11px] font-semibold uppercase text-zinc-400 tracking-wider">Kurul / Sayfa Seçimi:</label>
+                      <div className="flex flex-wrap gap-1.5">
                         {excelSheets.map(sheet => (
                           <button
                             key={sheet}
                             onClick={() => setActiveExcelSheet(sheet)}
-                            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                            className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all border ${
                               activeExcelSheet === sheet
-                                ? 'bg-indigo-600 text-white'
-                                : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                                ? 'bg-amber-400 text-zinc-950 border-amber-400 font-bold'
+                                : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-750'
                             }`}
                           >
                             {sheet}
@@ -592,63 +592,63 @@ const ScheduleToCalendar = () => {
 
               {/* Hata & Başarı Bildirimleri */}
               {error && (
-                <div className="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2.5">
-                  <AlertTriangle size={16} className="text-rose-400 flex-shrink-0 mt-0.5" />
+                <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-start gap-2">
+                  <AlertTriangle size={15} className="text-rose-400 flex-shrink-0 mt-0.5" />
                   <span>{error}</span>
                 </div>
               )}
               {successMessage && !error && (
-                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-center gap-2">
-                  <CheckCircle2 size={16} className="text-emerald-400 flex-shrink-0" />
+                <div className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-300 text-xs flex items-center gap-2">
+                  <CheckCircle2 size={15} className="text-amber-400 flex-shrink-0" />
                   <span>{successMessage}</span>
                 </div>
               )}
             </div>
 
             {/* ADIM 2: AKILLI FİLTRELER */}
-            <div className="glass-panel rounded-2xl p-5 sm:p-6 space-y-5">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-sm font-bold">2</div>
+            <div className="glass-panel rounded-xl p-5 space-y-4">
+              <h2 className="text-base font-bold text-white flex items-center gap-2">
+                <div className="w-6 h-6 rounded-md bg-zinc-800 text-amber-400 border border-zinc-700 flex items-center justify-center text-xs font-bold">2</div>
                 <span>Akıllı Takvim Filtreleri</span>
               </h2>
 
-              <div className="space-y-4">
+              <div className="space-y-3.5">
                 {/* Grup Seçimi (G1 / G2 / Tümü) */}
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-semibold uppercase text-slate-300 tracking-wider flex items-center gap-1.5">
-                      <Layers size={14} className="text-indigo-400" />
-                      <span>Pratik / Laboratuvar Grubu</span>
+                    <label className="text-xs font-semibold uppercase text-zinc-300 tracking-wider flex items-center gap-1.5">
+                      <Layers size={13} className="text-amber-400" />
+                      <span>Laboratuvar Grubu</span>
                     </label>
-                    <span className="text-[11px] text-slate-400">Çakışmaları önler</span>
+                    <span className="text-[11px] text-zinc-500">Çakışmayı önler</span>
                   </div>
-                  <div className="grid grid-cols-3 gap-2 p-1 bg-slate-900 rounded-xl border border-slate-800">
+                  <div className="grid grid-cols-3 gap-1.5 p-1 bg-zinc-950 rounded-xl border border-zinc-800">
                     <button
                       onClick={() => setSelectedGroup('all')}
-                      className={`py-2 text-xs font-semibold rounded-lg transition-all ${
+                      className={`py-1.5 text-xs font-semibold rounded-lg transition-all ${
                         selectedGroup === 'all'
-                          ? 'bg-indigo-600 text-white shadow'
-                          : 'text-slate-400 hover:text-slate-200'
+                          ? 'bg-amber-400 text-zinc-950 font-bold shadow-sm'
+                          : 'text-zinc-400 hover:text-zinc-200'
                       }`}
                     >
                       Tüm Sınıf
                     </button>
                     <button
                       onClick={() => setSelectedGroup('G1')}
-                      className={`py-2 text-xs font-semibold rounded-lg transition-all ${
+                      className={`py-1.5 text-xs font-semibold rounded-lg transition-all ${
                         selectedGroup === 'G1'
-                          ? 'bg-indigo-600 text-white shadow'
-                          : 'text-slate-400 hover:text-slate-200'
+                          ? 'bg-amber-400 text-zinc-950 font-bold shadow-sm'
+                          : 'text-zinc-400 hover:text-zinc-200'
                       }`}
                     >
                       Sadece G1
                     </button>
                     <button
                       onClick={() => setSelectedGroup('G2')}
-                      className={`py-2 text-xs font-semibold rounded-lg transition-all ${
+                      className={`py-1.5 text-xs font-semibold rounded-lg transition-all ${
                         selectedGroup === 'G2'
-                          ? 'bg-indigo-600 text-white shadow'
-                          : 'text-slate-400 hover:text-slate-200'
+                          ? 'bg-amber-400 text-zinc-950 font-bold shadow-sm'
+                          : 'text-zinc-400 hover:text-zinc-200'
                       }`}
                     >
                       Sadece G2
@@ -657,37 +657,37 @@ const ScheduleToCalendar = () => {
                 </div>
 
                 {/* Bağımsız Çalışma Saati Toggle */}
-                <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-800/40 border border-slate-800 hover:border-slate-700 transition">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-zinc-900/60 border border-zinc-800 hover:border-zinc-700 transition">
                   <div className="space-y-0.5">
-                    <div className="text-sm font-medium text-slate-200">Bağımsız Çalışma Saatleri</div>
-                    <div className="text-xs text-slate-400">
+                    <div className="text-xs font-semibold text-zinc-200">Bağımsız Çalışma Saatleri</div>
+                    <div className="text-[11px] text-zinc-500">
                       {includeSelfStudy ? 'Çalışma saatleri takvime ekleniyor' : 'Sadece dersler ve sınavlar ekleniyor'}
                     </div>
                   </div>
                   <button
                     onClick={() => setIncludeSelfStudy(!includeSelfStudy)}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-                      includeSelfStudy ? 'bg-indigo-600' : 'bg-slate-700'
+                    className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors focus:outline-none ${
+                      includeSelfStudy ? 'bg-amber-400' : 'bg-zinc-700'
                     }`}
                   >
                     <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                        includeSelfStudy ? 'translate-x-6' : 'translate-x-1'
+                      className={`inline-block h-3.5 w-3.5 transform rounded-full bg-zinc-950 transition-transform ${
+                        includeSelfStudy ? 'translate-x-5' : 'translate-x-1'
                       }`}
                     />
                   </button>
                 </div>
 
                 {/* Hatırlatıcı / Alarm Süresi */}
-                <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase text-slate-300 tracking-wider flex items-center gap-1.5">
-                    <Bell size={14} className="text-indigo-400" />
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold uppercase text-zinc-300 tracking-wider flex items-center gap-1.5">
+                    <Bell size={13} className="text-amber-400" />
                     <span>Ders Başlama Hatırlatıcısı</span>
                   </label>
                   <select
                     value={alarmMinutes}
                     onChange={(e) => setAlarmMinutes(Number(e.target.value))}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 transition"
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-200 focus:outline-none focus:border-amber-400 transition"
                   >
                     <option value={15}>Ders başlamadan 15 dakika önce</option>
                     <option value={30}>Ders başlamadan 30 dakika önce</option>
@@ -699,44 +699,40 @@ const ScheduleToCalendar = () => {
             </div>
 
             {/* ADIM 3: TAKVİMİ İNDİR */}
-            <div className="glass-panel rounded-2xl p-5 sm:p-6 space-y-4">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">3</div>
+            <div className="glass-panel rounded-xl p-5 space-y-3.5">
+              <h2 className="text-base font-bold text-white flex items-center gap-2">
+                <div className="w-6 h-6 rounded-md bg-zinc-800 text-amber-400 border border-zinc-700 flex items-center justify-center text-xs font-bold">3</div>
                 <span>Eksiksiz Takvimi İndir (.ics)</span>
               </h2>
 
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
-                <div className="flex items-center justify-between text-xs text-slate-400">
+              <div className="p-3 rounded-lg bg-zinc-900 border border-zinc-800 space-y-1.5 text-xs">
+                <div className="flex items-center justify-between text-zinc-400">
                   <span>Program:</span>
-                  <span className="font-semibold text-slate-200 truncate max-w-[200px]">{currentKurulName}</span>
+                  <span className="font-semibold text-zinc-200 truncate max-w-[200px]">{currentKurulName}</span>
                 </div>
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span>Aktarılacak Toplam Etkinlik:</span>
-                  <span className="font-bold text-emerald-400 text-sm">{filteredEvents.length} Ders Saati</span>
+                <div className="flex items-center justify-between text-zinc-400">
+                  <span>Aktarılacak Ders:</span>
+                  <span className="font-bold text-amber-400 font-mono">{filteredEvents.length} Ders Saati</span>
                 </div>
-                <div className="flex items-center justify-between text-xs text-slate-400">
+                <div className="flex items-center justify-between text-zinc-400">
                   <span>Seçili Grup:</span>
-                  <span className="font-medium text-slate-300">{selectedGroup === 'all' ? 'Tüm Sınıf' : selectedGroup}</span>
-                </div>
-                <div className="flex items-center justify-between text-xs text-slate-400">
-                  <span>Çalışma Saatleri:</span>
-                  <span className="font-medium text-slate-300">{includeSelfStudy ? 'Dahil' : 'Hariç'}</span>
+                  <span className="font-medium text-zinc-300">{selectedGroup === 'all' ? 'Tüm Sınıf' : selectedGroup}</span>
                 </div>
               </div>
 
               <button
                 onClick={handleDownloadICS}
                 disabled={filteredEvents.length === 0}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2.5 shadow-lg shadow-emerald-950/50 hover:shadow-emerald-900/50 hover:scale-[1.01]"
+                className="w-full bg-amber-400 hover:bg-amber-300 disabled:bg-zinc-800 disabled:text-zinc-600 disabled:cursor-not-allowed text-zinc-950 font-black py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm text-sm"
               >
-                <Calendar size={20} />
+                <Calendar size={18} />
                 <span>Eksiksiz Takvimi İndir (.ics)</span>
               </button>
 
-              <div className="pt-2 border-t border-slate-800 flex items-center justify-between">
+              <div className="pt-2 border-t border-zinc-800 flex items-center justify-between">
                 <button
                   onClick={() => setShowCleanupModal(true)}
-                  className="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1.5 transition underline decoration-dotted"
+                  className="text-xs text-zinc-400 hover:text-amber-400 flex items-center gap-1.5 transition underline decoration-dotted"
                 >
                   <Trash2 size={13} />
                   <span>Google Takvime daha önce ekledim, nasıl temizlerim?</span>
@@ -771,71 +767,71 @@ const ScheduleToCalendar = () => {
         {/* --- GOOGLE TAKVİM TEMİZLEME REHBERİ MODALI --- */}
         {showCleanupModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-            <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full p-6 space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div className="bg-zinc-900 border border-zinc-700 rounded-xl max-w-2xl w-full p-5 sm:p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
                 <div className="flex items-center gap-2.5 text-amber-400">
-                  <Trash2 size={22} />
-                  <h3 className="text-lg font-bold text-white">Google Takvim'den Eski/Eksik Dersleri Temizleme</h3>
+                  <Trash2 size={20} />
+                  <h3 className="text-base sm:text-lg font-bold text-white">Google Takvim'den Eski/Eksik Dersleri Temizleme</h3>
                 </div>
                 <button
                   onClick={() => setShowCleanupModal(false)}
-                  className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800"
+                  className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800"
                 >
-                  <X size={18} />
+                  <X size={16} />
                 </button>
               </div>
 
-              <div className="space-y-4 text-sm text-slate-300">
-                <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-800/60 space-y-2">
-                  <div className="font-semibold text-emerald-300 flex items-center gap-2">
+              <div className="space-y-3.5 text-xs sm:text-sm text-zinc-300">
+                <div className="p-3.5 rounded-lg bg-zinc-950 border border-emerald-500/30 space-y-2">
+                  <div className="font-semibold text-emerald-400 flex items-center gap-2">
                     <span>🌟 1. YÖNTEM: Ayrı Bir Takvim Olarak Eklediyseniz (En Kolay Yol - 5 Saniye)</span>
                   </div>
-                  <ol className="list-decimal list-inside text-xs text-slate-300 space-y-1 pl-1">
+                  <ol className="list-decimal list-inside text-xs text-zinc-300 space-y-1 pl-1">
                     <li>Bilgisayarınızda veya telefonunuzda <b>calendar.google.com</b> adresini açın.</li>
                     <li>Sol menüde <b>"Diğer Takvimler"</b> veya <b>"Takvimlerim"</b> altında eklediğiniz takvimi bulun.</li>
                     <li>Üzerine gelip <b>üç noktaya (⋮)</b> tıklayın → <b>Ayarlar ve Paylaşım</b> seçeneğini seçin.</li>
                     <li>En alta kaydırıp <b>"Takvimi Sil"</b> butonuna basın. Tüm eski dersler anında silinir!</li>
-                    <li>Ardından ana sayfadaki yeşil <b>"Eksiksiz Takvimi İndir (.ics)"</b> butonuna basıp yeni dosyayı yükleyin.</li>
+                    <li>Ardından ana sayfadaki sarı <b>"Eksiksiz Takvimi İndir (.ics)"</b> butonuna basıp yeni dosyayı yükleyin.</li>
                   </ol>
                 </div>
 
-                <div className="p-4 rounded-xl bg-indigo-950/40 border border-indigo-800/60 space-y-3">
-                  <div className="font-semibold text-indigo-300 flex items-center gap-2">
+                <div className="p-3.5 rounded-lg bg-zinc-950 border border-zinc-800 space-y-2.5">
+                  <div className="font-semibold text-amber-400 flex items-center gap-2">
                     <span>🔄 2. YÖNTEM: Otomatik İptal / Temizleme Dosyası Kullanma</span>
                   </div>
-                  <p className="text-xs text-slate-300">
+                  <p className="text-xs text-zinc-400">
                     Aşağıdaki butona basarak özel hazırlanmış <b>İptal Takvimi (.ics)</b> dosyasını indirin. Bu dosyayı Google Takvim'e aktardığınızda, aynı ID'ye sahip eski etkinlikleri otomatik olarak iptal edecektir:
                   </p>
                   <button
                     onClick={handleDownloadCancellationICS}
-                    className="w-full py-3 px-4 rounded-xl bg-amber-600 hover:bg-amber-500 text-slate-950 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 shadow"
+                    className="w-full py-2.5 px-3 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-amber-400 border border-zinc-700 font-bold text-xs transition flex items-center justify-center gap-2"
                   >
-                    <RefreshCw size={16} />
+                    <RefreshCw size={14} />
                     <span>Eski Eklenenleri İptal Etme Dosyasını İndir (.ics)</span>
                   </button>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-2">
+                <div className="p-3.5 rounded-lg bg-zinc-950 border border-zinc-800 space-y-1.5">
                   <div className="font-semibold text-white flex items-center gap-2">
                     <span>🔍 3. YÖNTEM: Ana Takviminizden Arama ile Toplu Silme</span>
                   </div>
-                  <p className="text-xs text-slate-300">
+                  <p className="text-xs text-zinc-400">
                     calendar.google.com üst arama kutusuna <b>"İzmir Bakırçay Üniversitesi"</b> veya <b>"Kurul I"</b> yazıp Enter'a basın. Çıkan etkinlikleri seçip Çöp Kutusu simgesiyle silebilirsiniz.
                   </p>
                 </div>
               </div>
 
-              <div className="pt-2 flex flex-col sm:flex-row items-center gap-3">
+              <div className="pt-2 flex flex-col sm:flex-row items-center gap-2.5">
                 <button
                   onClick={handleDownloadICS}
-                  className="w-full sm:flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded-xl transition flex items-center justify-center gap-2"
+                  className="w-full sm:flex-1 bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold py-2.5 px-4 rounded-lg transition flex items-center justify-center gap-2 text-xs"
                 >
-                  <Calendar size={18} />
+                  <Calendar size={15} />
                   <span>Yeni Eksiksiz Takvimi İndir (.ics)</span>
                 </button>
                 <button
                   onClick={() => setShowCleanupModal(false)}
-                  className="w-full sm:w-auto px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition"
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold transition"
                 >
                   Kapat
                 </button>
@@ -846,45 +842,45 @@ const ScheduleToCalendar = () => {
 
         {/* --- YARDIM & TAKVİME EKLEME MODALI --- */}
         {showHelpModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-            <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-xl w-full p-6 space-y-5 shadow-2xl relative">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <div className="flex items-center gap-2.5">
-                  <Calendar size={22} className="text-indigo-400" />
-                  <h3 className="text-lg font-bold text-white">Takvime Nasıl Aktarılır?</h3>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+            <div className="bg-zinc-900 border border-zinc-700 rounded-xl max-w-lg w-full p-5 space-y-4 shadow-2xl relative">
+              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <Calendar size={18} className="text-amber-400" />
+                  <h3 className="text-base font-bold text-white">Takvime Nasıl Aktarılır?</h3>
                 </div>
                 <button
                   onClick={() => setShowHelpModal(false)}
-                  className="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800"
+                  className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800"
                 >
-                  <X size={18} />
+                  <X size={16} />
                 </button>
               </div>
 
-              <div className="space-y-4 text-sm text-slate-300">
-                <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-1">
-                  <div className="font-semibold text-white flex items-center gap-2">
+              <div className="space-y-2.5 text-xs text-zinc-300">
+                <div className="p-3 rounded-lg bg-zinc-950 border border-zinc-800 space-y-1">
+                  <div className="font-semibold text-white flex items-center gap-1.5">
                     <span>📱 iPhone & iPad (Apple Calendar)</span>
                   </div>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-zinc-400">
                     Safari üzerinden ".ics İndir" butonuna dokunun. Çıkan onay penceresinde "Takvime Ekle" veya "Tümünü Ekle" seçeneğini seçin. Tüm dersler alarmlarıyla birlikte takviminize işlenecektir.
                   </p>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-1">
-                  <div className="font-semibold text-white flex items-center gap-2">
+                <div className="p-3 rounded-lg bg-zinc-950 border border-zinc-800 space-y-1">
+                  <div className="font-semibold text-white flex items-center gap-1.5">
                     <span>🌐 Google Calendar (Android & Web)</span>
                   </div>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-zinc-400">
                     calendar.google.com adresinde Ayarlar ⚙️ → "İçe ve Dışa Aktar" bölümünden indirdiğiniz .ics dosyasını yükleyin. (İpucu: Sol menüden '+' ile yeni bir "Bakırçay Tıp" takvimi açıp ona yüklerseniz, dilediğinizde tek tıkla gizleyebilir veya silebilirsiniz).
                   </p>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/60 space-y-1">
-                  <div className="font-semibold text-white flex items-center gap-2">
+                <div className="p-3 rounded-lg bg-zinc-950 border border-zinc-800 space-y-1">
+                  <div className="font-semibold text-white flex items-center gap-1.5">
                     <span>💻 Mac & Windows Outlook</span>
                   </div>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-zinc-400">
                     İndirilen .ics dosyasına çift tıklamanız yeterlidir. Takvim uygulamanız otomatik olarak açılacak ve etkinlikleri yeni veya mevcut takviminize ekleyecektir.
                   </p>
                 </div>
@@ -892,7 +888,7 @@ const ScheduleToCalendar = () => {
 
               <button
                 onClick={() => setShowHelpModal(false)}
-                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-xl transition"
+                className="w-full bg-amber-400 hover:bg-amber-300 text-zinc-950 font-bold py-2 rounded-lg transition text-xs"
               >
                 Anladım, Kapat
               </button>
