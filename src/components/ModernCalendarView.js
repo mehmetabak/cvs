@@ -7,17 +7,17 @@ import {
 } from 'lucide-react';
 import { extractDepartmentName, isDemoEvent } from '../utils/examAnalytics';
 
-// Tıp Fakültesi Standart Saat Aralıkları
+// Tıp Fakültesi Standart Saat Aralıkları (Cuma öğleden sonra cuma namazı ve öğle tatili nedeniyle 14:00'te başlar)
 const STANDARD_TIME_SLOTS = [
-  { start: '08:15', end: '09:00', label: '1. Ders' },
-  { start: '09:15', end: '10:00', label: '2. Ders' },
-  { start: '10:15', end: '11:00', label: '3. Ders' },
-  { start: '11:15', end: '12:00', label: '4. Ders' },
+  { start: '08:15', end: '09:00', label: '1. Ders', matchStarts: ['08:15'] },
+  { start: '09:15', end: '10:00', label: '2. Ders', matchStarts: ['09:15'] },
+  { start: '10:15', end: '11:00', label: '3. Ders', matchStarts: ['10:15', '10:00'] },
+  { start: '11:15', end: '12:00', label: '4. Ders', matchStarts: ['11:15'] },
   { isBreak: true, start: '12:00', end: '13:30', label: 'Öğle Arası' },
-  { start: '13:30', end: '14:15', label: '5. Ders' },
-  { start: '14:30', end: '15:15', label: '6. Ders' },
-  { start: '15:30', end: '16:15', label: '7. Ders' },
-  { start: '16:30', end: '17:15', label: '8. Ders' }
+  { start: '13:30', end: '14:15', fridayStart: '14:00', label: '5. Ders', matchStarts: ['13:30', '14:00'] },
+  { start: '14:30', end: '15:15', fridayStart: '15:00', label: '6. Ders', matchStarts: ['14:30', '15:00'] },
+  { start: '15:30', end: '16:15', fridayStart: '16:00', label: '7. Ders', matchStarts: ['15:30', '16:00'] },
+  { start: '16:30', end: '17:15', fridayStart: '17:00', label: '8. Ders', matchStarts: ['16:30', '16:40', '17:00'] }
 ];
 
 const WEEK_DAYS = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma'];
@@ -124,11 +124,11 @@ const ModernCalendarView = ({
     }
   };
 
-  // Belirli bir gün ve saatteki etkinlikleri bul
-  const getEventsForSlot = (day, slotStart) => {
+  // Belirli bir gün ve saat dilimindeki etkinlikleri bul (Cuma öğleden sonra saatleri dahil)
+  const getEventsForSlot = (day, slot) => {
     return weekEvents.filter(e => {
       if (e.day !== day) return false;
-      return e.startTime === slotStart;
+      return slot.matchStarts ? slot.matchStarts.includes(e.startTime) : e.startTime === slot.start;
     });
   };
 
@@ -420,7 +420,7 @@ const ModernCalendarView = ({
                         12:00 - 13:30
                       </div>
                       <div className="col-span-5 p-1.5 text-center text-xs tracking-wide text-zinc-500 italic">
-                        Öğle Arası (12:00 - 13:30)
+                        Öğle Arası (Pzt–Per: 12:00 - 13:30 • Cuma: 12:00 - 14:00)
                       </div>
                     </div>
                   );
@@ -434,13 +434,16 @@ const ModernCalendarView = ({
                     {/* Saat Dilimi */}
                     <div className="p-2 border-r border-zinc-800/80 flex flex-col items-center justify-center text-center bg-zinc-900/40">
                       <span className="font-mono text-xs font-semibold text-zinc-200">{slot.start}</span>
+                      {slot.fridayStart && (
+                        <span className="text-[9px] font-mono text-amber-400 font-medium">Cuma {slot.fridayStart}</span>
+                      )}
                       <span className="font-mono text-[10px] text-zinc-500">{slot.end}</span>
                       <span className="text-[9px] text-zinc-500 font-medium mt-0.5">{slot.label}</span>
                     </div>
 
                     {/* 5 Günün Hücreleri */}
                     {WEEK_DAYS.map((day) => {
-                      const slotEvents = getEventsForSlot(day, slot.start);
+                      const slotEvents = getEventsForSlot(day, slot);
 
                       if (slotEvents.length === 0) {
                         return (
